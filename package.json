@@ -2,6 +2,15 @@
   "name": "bazimya",
   "version": "0.2.0",
   "description": "A Python web framework with Laravel's structure. Deploys to a VPS or to shared hosting with no shell.",
+  "homepage": "https://github.com/bzsaph/bazimya#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bzsaph/bazimya.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bzsaph/bazimya/issues"
+  },
+  "author": "James Mark <ericnyirimana31@gmail.com>",
   "keywords": [
     "framework",
     "python",

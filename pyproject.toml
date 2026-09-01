@@ -9,11 +9,12 @@ description = "A Python web framework with Laravel's structure."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
+authors = [{ name = "James Mark", email = "ericnyirimana31@gmail.com" }]
+maintainers = [{ name = "James Mark", email = "ericnyirimana31@gmail.com" }]
 keywords = ["framework", "web", "mvc", "laravel", "wsgi"]
 
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Framework :: Bazimya",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -30,6 +31,12 @@ mysql = ["PyMySQL>=1.1"]
 postgres = ["psycopg2-binary>=2.9"]
 server = ["gunicorn>=21.2"]
 
+[project.urls]
+Homepage = "https://github.com/bzsaph/bazimya"
+Repository = "https://github.com/bzsaph/bazimya"
+Issues = "https://github.com/bzsaph/bazimya/issues"
+Changelog = "https://github.com/bzsaph/bazimya/releases"
+
 [project.scripts]
 bazimya = "bazimya.console.kernel:main"
 
@@ -37,4 +44,4 @@ bazimya = "bazimya.console.kernel:main"
 include = ["bazimya*"]
 
 [tool.setuptools.package-data]
-bazimya = ["stubs/**/*"]
+bazimya = ["stubs/**/*", "stubs/**/.*"]
