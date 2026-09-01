@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+use Bazimya\Database\Migration;
+
+/*
+ * {{name}}
+ *
+ * Bazimya 0.1 migrations are plain SQL. Write the statements your database
+ * understands; $this->execute() runs them through PDO.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $this->execute('
+            CREATE TABLE IF NOT EXISTS "{{table}}" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                "created_at" DATETIME NULL,
+                "updated_at" DATETIME NULL
+            )
+        ');
+    }
+
+    public function down(): void
+    {
+        $this->execute('DROP TABLE IF EXISTS "{{table}}"');
+    }
+};

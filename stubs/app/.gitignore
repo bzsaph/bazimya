@@ -1,0 +1,12 @@
+/vendor
+/node_modules
+.env
+.DS_Store
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+/database/*.sqlite
+/python/__pycache__
+/python/**/__pycache__
+/python/.venv

@@ -1,0 +1,21 @@
+"""{{name}} — a Bazimya Python service.
+
+Called from PHP with:
+
+    use Bazimya\\Facades\\Python;
+
+    $result = Python::call('{{name}}', ['message' => 'Hello']);
+
+`payload` is the decoded array PHP sent. Return anything JSON-serialisable;
+Bazimya wraps it and hands it back to PHP.
+"""
+
+
+def handle(payload):
+    message = payload.get("message", "")
+
+    return {
+        "service": "{{name}}",
+        "received": message,
+        "reply": "Hello from Python!",
+    }

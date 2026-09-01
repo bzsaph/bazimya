@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Bazimya\Database\Model;
+
+class {{class}} extends Model
+{
+    protected string $table = '{{table}}';
+
+    protected string $primaryKey = 'id';
+
+    /** Columns that may be mass-assigned. Leave empty to allow all. */
+    protected array $fillable = [];
+
+    /** Columns hidden from toArray() and JSON output. */
+    protected array $hidden = [];
+
+    protected bool $timestamps = true;
+}
