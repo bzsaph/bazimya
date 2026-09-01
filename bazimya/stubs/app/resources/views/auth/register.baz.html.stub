@@ -3,28 +3,50 @@
 @section('title', 'Register')
 
 @section('content')
-    <h1>Create an account</h1>
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="h4 fw-semibold mb-4">Create an account</h1>
 
-    <form method="POST" action="/register" class="form">
-        @csrf
+                    <form method="POST" action="/register">
+                        @csrf
 
-        <label for="name">Name</label>
-        <input id="name" name="name" value="{{ old('name', '') }}" required autofocus>
-        <x-input-error field="name" />
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input id="name" name="name" class="form-control"
+                                   value="{{ old('name', '') }}" required autofocus>
+                            <x-input-error field="name" />
+                        </div>
 
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" value="{{ old('email', '') }}" required>
-        <x-input-error field="email" />
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input id="email" name="email" type="email" class="form-control"
+                                   value="{{ old('email', '') }}" required>
+                            <x-input-error field="email" />
+                        </div>
 
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" required>
-        <x-input-error field="password" />
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input id="password" name="password" type="password"
+                                   class="form-control" required>
+                            <x-input-error field="password" />
+                        </div>
 
-        <label for="password_confirmation">Confirm password</label>
-        <input id="password_confirmation" name="password_confirmation" type="password" required>
+                        <div class="mb-4">
+                            <label for="password_confirmation" class="form-label">Confirm password</label>
+                            <input id="password_confirmation" name="password_confirmation"
+                                   type="password" class="form-control" required>
+                        </div>
 
-        <button type="submit">Register</button>
-    </form>
+                        <button type="submit" class="btn btn-success w-100">Register</button>
+                    </form>
+                </div>
+            </div>
 
-    <p><a href="/login">Already have an account?</a></p>
+            <p class="text-center small text-body-secondary mt-3 mb-0">
+                <a href="/login" class="link-secondary">Already have an account?</a>
+            </p>
+        </div>
+    </div>
 @endsection

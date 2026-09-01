@@ -10,3 +10,7 @@ node_modules/
 .idea/
 .vscode/
 .pytest_cache/
+
+# Apps scaffolded here while working on the framework.
+/my-app/
+/test/

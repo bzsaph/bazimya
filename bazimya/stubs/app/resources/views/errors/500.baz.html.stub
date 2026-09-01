@@ -3,7 +3,12 @@
 @section('title', 'Something went wrong')
 
 @section('content')
-    <h1>500 — Something went wrong</h1>
-    <p>The error has been logged. Please try again.</p>
-    <p><a href="/">Back home</a></p>
+    <div class="row justify-content-center text-center py-5">
+        <div class="col-md-7">
+            <p class="display-1 fw-bold text-body-tertiary mb-0">500</p>
+            <h1 class="h3 fw-semibold mb-3">Something went wrong</h1>
+            <p class="text-body-secondary mb-4">The server hit an error it could not recover from. It has been logged.</p>
+            <a href="/" class="btn btn-success px-4">Back home</a>
+        </div>
+    </div>
 @endsection

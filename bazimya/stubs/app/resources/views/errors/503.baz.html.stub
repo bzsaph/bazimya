@@ -1,8 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Be right back')
+@section('title', 'Down for maintenance')
 
 @section('content')
-    <h1>503 — Be right back</h1>
-    <p>The site is temporarily unavailable.</p>
+    <div class="row justify-content-center text-center py-5">
+        <div class="col-md-7">
+            <p class="display-1 fw-bold text-body-tertiary mb-0">503</p>
+            <h1 class="h3 fw-semibold mb-3">Down for maintenance</h1>
+            <p class="text-body-secondary mb-4">The application is unavailable for a moment. Please try again shortly.</p>
+            <a href="/" class="btn btn-success px-4">Back home</a>
+        </div>
+    </div>
 @endsection

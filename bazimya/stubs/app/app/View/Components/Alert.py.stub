@@ -10,9 +10,19 @@ from bazimya import Component
 
 
 class Alert(Component):
+    # Bootstrap has no alert-error; "error" is the word people reach for, so
+    # accept it and translate. Same for the other two aliases.
+    ALIASES = {"error": "danger", "notice": "info", "ok": "success"}
+
     def __init__(self, type="info", dismissible=False):
         self.type = type
         self.dismissible = dismissible
 
     def classes(self):
-        return "alert alert-" + self.type
+        variant = self.ALIASES.get(self.type, self.type)
+        classes = ["alert", "alert-" + variant]
+
+        if self.dismissible:
+            classes += ["alert-dismissible", "fade", "show"]
+
+        return " ".join(classes)

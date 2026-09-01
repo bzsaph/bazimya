@@ -3,13 +3,47 @@
 @section('title', 'Home')
 
 @section('content')
-    <h1>{{ greeting }}, {{ name }}</h1>
+    <div class="row align-items-center g-5 pb-5 mb-4 border-bottom">
+        <div class="col-lg-7">
+            <p class="text-success fw-semibold text-uppercase small mb-2 tracking">
+                {{ greeting }}, {{ name }}
+            </p>
 
-    <p>
-        This page is a <code>.baz.py</code> template. The syntax is Blade's, the
-        expressions are Python: <code>{{ name }}</code>, not
-        <code>@{{ $name }}</code>.
-    </p>
+            <h1 class="display-5 fw-bold lh-sm mb-3">
+                Laravel's structure.<br>Python's language.
+            </h1>
+
+            <p class="lead text-body-secondary mb-4">
+                This page is a <code>.baz.html</code> template. The syntax is Blade's,
+                the expressions are Python &mdash; <code>{{ name }}</code>, not
+                <code>@{{ $name }}</code>. Edit it at
+                <code>resources/views/home.baz.html</code>.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/register" class="btn btn-success px-4">Create an account</a>
+                <a href="/about" class="btn btn-outline-secondary px-4">See the JSON route</a>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex align-items-center gap-2 py-2 bg-body-tertiary">
+                    <span class="d-inline-block rounded-circle bg-danger" style="width:.6rem;height:.6rem"></span>
+                    <span class="d-inline-block rounded-circle bg-warning" style="width:.6rem;height:.6rem"></span>
+                    <span class="d-inline-block rounded-circle bg-success" style="width:.6rem;height:.6rem"></span>
+                    <small class="ms-2 text-body-secondary font-monospace">routes/web.py</small>
+                </div>
+                <div class="card-body p-0">
+<pre class="mb-0 p-3 small overflow-auto"><code>from bazimya import Route
+from app.Http.Controllers import HomeController
+
+Route.get('/', [HomeController, 'index']).name('home')
+Route.resource('posts', PostController)</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @python
     features = [
@@ -18,28 +52,60 @@
         ('Migrations', 'with Schema.create(\'posts\') as table:'),
         ('Extensions', 'bazimya make:extension Blog'),
     ]
+
+    steps = [
+        ('Add a route', 'routes/web.py'),
+        ('Make a controller', 'bazimya make:controller PostController --resource'),
+        ('Make a model and its migration', 'bazimya make:model Post -m'),
+        ('Run the migrations', 'bazimya migrate'),
+        ('Ship it', 'bazimya build --shared'),
+    ]
     @endpython
 
-    <ul class="features">
+    <h2 class="h4 fw-semibold mb-4">What is in the box</h2>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
         @foreach label, example in features
-            <li>
-                <strong>{{ label }}</strong>
-                <code>{{ example }}</code>
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="h6 fw-semibold mb-2">{{ label }}</h3>
+                        <code class="small text-body-secondary d-block text-break">{{ example }}</code>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <h2 class="h4 fw-semibold mb-4">Where to go next</h2>
+
+    <ol class="list-group list-group-numbered mb-5">
+        @foreach title, command in steps
+            <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span>{{ title }}</span>
+                <code class="small text-body-secondary text-break">{{ command }}</code>
             </li>
         @endforeach
-    </ul>
-
-    <h2>Where to go next</h2>
-
-    <ol>
-        <li>Add a route in <code>routes/web.py</code>.</li>
-        <li>Make a controller: <code>bazimya make:controller PostController --resource</code></li>
-        <li>Make a model and its migration: <code>bazimya make:model Post -m</code></li>
-        <li>Run migrations: <code>bazimya migrate</code></li>
-        <li>Ship it: <code>bazimya build --shared</code> or <code>bazimya build</code></li>
     </ol>
+
+    <div class="card border-0 bg-body-tertiary">
+        <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h3 class="h6 fw-semibold mb-1">Bazimya</h3>
+                <p class="mb-0 small text-body-secondary">
+                    A Python web framework developed in Kigali, Rwanda &#127479;&#127484;
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="https://github.com/bzsaph/bazimya">Source</a>
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="https://pypi.org/project/bazimya/">PyPI</a>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('footer')
-    Bazimya — Laravel's structure, Python's language.
+    Bazimya &mdash; Laravel's structure, Python's language.
 @endsection

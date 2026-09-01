@@ -1,86 +1,30 @@
-/* A small, deliberately plain stylesheet. Replace it with your own. */
+/* Your application's own styles.
 
-:root {
-    color-scheme: light dark;
-    --ink: #14171a;
-    --muted: #5b6570;
-    --bg: #fbfbfa;
-    --panel: #ffffff;
-    --line: #e3e5e8;
-    --accent: #2f6f4f;
+   Bootstrap does the heavy lifting (loaded from a CDN in
+   resources/views/layouts/app.baz.html). This file is only for the few things
+   Bootstrap does not cover. Keep it small, or replace it entirely. */
+
+.tracking {
+    letter-spacing: .08em;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --ink: #e8eaed;
-        --muted: #9aa4af;
-        --bg: #15181b;
-        --panel: #1c2024;
-        --line: #2c3238;
-        --accent: #7fc8a0;
-    }
-}
-
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-header.site, footer.site {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--line);
-}
-
-footer.site {
-    border-bottom: 0;
-    border-top: 1px solid var(--line);
-    color: var(--muted);
-    font-size: .9rem;
-}
-
-.brand { font-weight: 600; text-decoration: none; color: var(--ink); }
-
-nav { display: flex; gap: 1rem; }
-nav a { color: var(--muted); text-decoration: none; }
-nav a:hover { color: var(--accent); }
-
-main {
-    max-width: 46rem;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
-}
-
-h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 1rem; }
-h2 { font-size: 1.2rem; margin: 2.5rem 0 .75rem; }
-
+/* Code samples read better with a tinted background than with Bootstrap's
+   default transparent one. */
+pre code,
 code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: .875em;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: .1em .4em;
 }
 
-ul.features { list-style: none; padding: 0; display: grid; gap: .5rem; }
-ul.features li {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: .75rem 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: .75rem;
-    align-items: baseline;
+pre {
+    background: var(--bs-tertiary-bg);
+    border-radius: var(--bs-border-radius);
 }
-ul.features strong { min-width: 7rem; }
 
-ol { padding-left: 1.25rem; }
-ol li { margin: .35rem 0; }
+/* Validation messages rendered by <x-input-error>. */
+.input-error {
+    list-style: none;
+    margin: .35rem 0 0;
+    padding: 0;
+    color: var(--bs-danger-text-emphasis);
+    font-size: .875rem;
+}
