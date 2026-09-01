@@ -30,7 +30,7 @@ from ..support.env import Env
 from ..view.view import View
 from .container import Container
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 
 class Application(Container):
