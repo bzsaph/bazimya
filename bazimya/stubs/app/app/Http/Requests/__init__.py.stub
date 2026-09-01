@@ -1,0 +1,21 @@
+"""Form requests, resolved by file name.
+
+    from app.Http.Requests import StorePostRequest
+"""
+
+import importlib
+import sys
+
+
+def __getattr__(name):
+    try:
+        module = importlib.import_module("." + name, __name__)
+    except ImportError as error:
+        raise AttributeError(
+            "No form request named [{}] in app/Http/Requests.".format(name)
+        ) from error
+
+    value = getattr(module, name)
+    setattr(sys.modules[__name__], name, value)
+
+    return value

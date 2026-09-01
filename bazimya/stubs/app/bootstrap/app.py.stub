@@ -1,0 +1,30 @@
+"""Creates the application.
+
+Every entry point — the CLI, the dev server, Passenger, gunicorn, CGI — comes
+through here, so there is one place that decides how the app is built.
+"""
+
+import os
+import sys
+
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# The project root must be importable before anything loads app.Http.Controllers.
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
+
+# A framework bundled by `bazimya build` sits inside the project, for hosts
+# where pip cannot be run. It is only used if bazimya is not already importable.
+_VENDORED = os.path.join(BASE_PATH, "vendor")
+
+if os.path.isdir(_VENDORED) and _VENDORED not in sys.path:
+    try:
+        import bazimya  # noqa: F401
+    except ImportError:
+        sys.path.insert(0, _VENDORED)
+
+
+def create_app():
+    from bazimya import Application
+
+    return Application(BASE_PATH)

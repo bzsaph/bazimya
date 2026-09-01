@@ -1,0 +1,19 @@
+{
+  "name": "{{slug}}",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Bazimya application.",
+  "scripts": {
+    "serve": "bazimya serve",
+    "migrate": "bazimya migrate",
+    "fresh": "bazimya migrate:fresh --seed",
+    "routes": "bazimya route:list",
+    "build": "bazimya build",
+    "build:shared": "bazimya build --shared",
+    "doctor": "bazimya doctor",
+    "tinker": "bazimya tinker"
+  },
+  "devDependencies": {
+    "bazimya": "^0.2.0"
+  }
+}

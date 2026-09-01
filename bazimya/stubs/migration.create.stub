@@ -1,0 +1,13 @@
+"""Create the {{table}} table."""
+
+from bazimya import Migration, Schema
+
+
+class {{class}}(Migration):
+    def up(self):
+        with Schema.create("{{table}}") as table:
+            table.id()
+            table.timestamps()
+
+    def down(self):
+        Schema.drop_if_exists("{{table}}")

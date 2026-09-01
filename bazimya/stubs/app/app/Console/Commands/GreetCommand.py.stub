@@ -1,0 +1,25 @@
+"""An example console command.
+
+    bazimya greet
+    bazimya greet Rwanda --shout
+"""
+
+from bazimya import Command
+
+
+class GreetCommand(Command):
+    name = "greet"
+
+    description = "Say hello from the application"
+
+    usage = "bazimya greet [name] [--shout]"
+
+    def handle(self):
+        who = self.argument(0, "world")
+        message = "Hello, {}!".format(who)
+
+        self.line("")
+        self.success("  " + (message.upper() if self.flag("shout") else message))
+        self.line("")
+
+        return 0

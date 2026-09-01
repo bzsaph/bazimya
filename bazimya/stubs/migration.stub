@@ -1,0 +1,11 @@
+"""{{name}}"""
+
+from bazimya import Migration, Schema
+
+
+class {{class}}(Migration):
+    def up(self):
+        pass
+
+    def down(self):
+        pass

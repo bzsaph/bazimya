@@ -1,0 +1,38 @@
+"""The {{name}} — a JSON resource controller.
+
+    Route.api_resource('{{plural}}', {{name}})
+"""
+
+from app.Models import {{model}}
+
+from .Controller import Controller
+
+
+class {{name}}(Controller):
+    def index(self, request):
+        return {
+            "data": [item.to_dict() for item in {{model}}.all()],
+        }
+
+    def store(self, request):
+        data = self.validate(request, {
+            "name": "required|max:255",
+        })
+
+        {{variable}} = {{model}}.create(data)
+
+        return self.json({"data": {{variable}}.to_dict()}, 201)
+
+    def show(self, request, {{variable}}):
+        return {"data": {{model}}.find_or_fail({{variable}}).to_dict()}
+
+    def update(self, request, {{variable}}):
+        record = {{model}}.find_or_fail({{variable}})
+        record.update(request.all())
+
+        return {"data": record.to_dict()}
+
+    def destroy(self, request, {{variable}}):
+        {{model}}.find_or_fail({{variable}}).delete()
+
+        return self.no_content()

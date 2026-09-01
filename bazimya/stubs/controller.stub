@@ -1,0 +1,8 @@
+"""The {{name}}."""
+
+from .Controller import Controller
+
+
+class {{name}}(Controller):
+    def index(self, request):
+        return self.view("{{views}}.index")

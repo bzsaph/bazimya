@@ -1,0 +1,36 @@
+"""Controllers, resolved by file name.
+
+Each controller lives in its own file named after the class, so that
+
+    from app.Http.Controllers import MyController
+
+finds it in MyController.py with nothing registered here first. Add a file and it
+is importable immediately.
+"""
+
+import importlib
+import sys
+
+
+def __getattr__(name):
+    try:
+        module = importlib.import_module("." + name, __name__)
+    except ImportError as error:
+        raise AttributeError(
+            "No controller named [{}] in app/Http/Controllers. "
+            "Create it with:  bazimya make:controller {}".format(name, name)
+        ) from error
+
+    try:
+        value = getattr(module, name)
+    except AttributeError:
+        raise AttributeError(
+            "app/Http/Controllers/{}.py does not define a class called {}.".format(name, name)
+        ) from None
+
+    # Importing the submodule bound it here under this same name. Rebind to the
+    # class, or `from app.Http.Controllers import MyController` hands back the module instead —
+    # which fails much later, somewhere far less obvious.
+    setattr(sys.modules[__name__], name, value)
+
+    return value

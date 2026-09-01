@@ -1,0 +1,11 @@
+# Bazimya itself has no required dependencies — the framework runs on the
+# Python standard library alone. Uncomment what your app actually uses.
+
+# MySQL (pure Python, installs on shared hosting where mysqlclient will not)
+# PyMySQL>=1.1
+
+# PostgreSQL
+# psycopg2-binary>=2.9
+
+# Production WSGI server for a VPS
+# gunicorn>=21.2

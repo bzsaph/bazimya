@@ -1,0 +1,18 @@
+"""The {{name}} console command."""
+
+from bazimya import Command
+
+
+class {{name}}(Command):
+    name = "{{signature}}"
+
+    description = "Command description"
+
+    usage = "bazimya {{signature}}"
+
+    def handle(self):
+        self.line("")
+        self.success("  {{name}} ran.")
+        self.line("")
+
+        return 0

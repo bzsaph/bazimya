@@ -1,0 +1,45 @@
+@extends('layouts.app')
+
+@section('title', 'Home')
+
+@section('content')
+    <h1>{{ greeting }}, {{ name }}</h1>
+
+    <p>
+        This page is a <code>.baz.py</code> template. The syntax is Blade's, the
+        expressions are Python: <code>{{ name }}</code>, not
+        <code>@{{ $name }}</code>.
+    </p>
+
+    @python
+    features = [
+        ('Routing', 'Route.get(\'/\', [HomeController, \'index\'])'),
+        ('Models', 'User.where(\'active\', 1).order_by(\'name\').get()'),
+        ('Migrations', 'with Schema.create(\'posts\') as table:'),
+        ('Extensions', 'bazimya make:extension Blog'),
+    ]
+    @endpython
+
+    <ul class="features">
+        @foreach label, example in features
+            <li>
+                <strong>{{ label }}</strong>
+                <code>{{ example }}</code>
+            </li>
+        @endforeach
+    </ul>
+
+    <h2>Where to go next</h2>
+
+    <ol>
+        <li>Add a route in <code>routes/web.py</code>.</li>
+        <li>Make a controller: <code>bazimya make:controller PostController --resource</code></li>
+        <li>Make a model and its migration: <code>bazimya make:model Post -m</code></li>
+        <li>Run migrations: <code>bazimya migrate</code></li>
+        <li>Ship it: <code>bazimya build --shared</code> or <code>bazimya build</code></li>
+    </ol>
+@endsection
+
+@section('footer')
+    Bazimya — Laravel's structure, Python's language.
+@endsection

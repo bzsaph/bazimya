@@ -1,0 +1,42 @@
+"""The {{name}} — the seven RESTful actions.
+
+Register every route at once with:
+
+    Route.resource('{{plural}}', {{name}})
+"""
+
+from .Controller import Controller
+
+
+class {{name}}(Controller):
+    def index(self, request):
+        """GET /{{plural}}"""
+        return self.view("{{views}}.index", {{plural}}=[])
+
+    def create(self, request):
+        """GET /{{plural}}/create"""
+        return self.view("{{views}}.create")
+
+    def store(self, request):
+        """POST /{{plural}}"""
+        data = self.validate(request, {
+            "name": "required|max:255",
+        })
+
+        return self.redirect("/{{plural}}")
+
+    def show(self, request, {{variable}}):
+        """GET /{{plural}}/{{{variable}}}"""
+        return self.view("{{views}}.show", {{variable}}={{variable}})
+
+    def edit(self, request, {{variable}}):
+        """GET /{{plural}}/{{{variable}}}/edit"""
+        return self.view("{{views}}.edit", {{variable}}={{variable}})
+
+    def update(self, request, {{variable}}):
+        """PUT/PATCH /{{plural}}/{{{variable}}}"""
+        return self.redirect("/{{plural}}/" + str({{variable}}))
+
+    def destroy(self, request, {{variable}}):
+        """DELETE /{{plural}}/{{{variable}}}"""
+        return self.redirect("/{{plural}}")

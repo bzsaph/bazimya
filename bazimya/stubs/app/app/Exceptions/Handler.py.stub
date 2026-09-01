@@ -1,0 +1,28 @@
+"""The exception handler.
+
+`render` returns a response for an exception, or None to let the framework
+fall back to its own error pages (resources/views/errors/404.baz.py and the
+rest).
+"""
+
+from bazimya import Response
+from bazimya.http.exceptions import HttpException
+
+
+class Handler:
+    def __init__(self, application):
+        self.app = application
+
+    def render(self, request, error):
+        # An API client wants JSON, not an HTML error page.
+        if request.wants_json():
+            status = error.status if isinstance(error, HttpException) else 500
+
+            payload = {"message": str(error) if status < 500 else "Server Error"}
+
+            if isinstance(error, HttpException) and getattr(error, "errors", None):
+                payload["errors"] = error.errors
+
+            return Response.json(payload, status)
+
+        return None

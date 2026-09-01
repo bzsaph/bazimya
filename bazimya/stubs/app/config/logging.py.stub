@@ -1,0 +1,9 @@
+"""Logging configuration."""
+
+from bazimya import env
+
+config = {
+    "channel": env("LOG_CHANNEL", "single"),
+    "path": env("LOG_PATH", "storage/logs/bazimya.log"),
+    "level": env("LOG_LEVEL", "error"),
+}

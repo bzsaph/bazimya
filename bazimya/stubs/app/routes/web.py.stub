@@ -1,0 +1,29 @@
+"""Web routes.
+
+Registered under no prefix, with the `web` middleware group. This is the file
+you will spend the most time in — it reads the way routes/web.php does.
+"""
+
+from bazimya import Route
+
+from app.Http.Controllers import HomeController
+
+Route.get("/", [HomeController, "index"]).name("home")
+Route.get("/about", [HomeController, "about"]).name("about")
+
+# A closure works too, when a controller would be overkill.
+Route.get("/ping", lambda request: {"pong": True})
+
+# Route parameters arrive as named arguments:
+#
+#     Route.get('/posts/{id}', [PostController, 'show']).where_number('id')
+#
+# Groups share a prefix, middleware and name prefix:
+#
+#     Route.middleware('auth').prefix('admin').name('admin.').group(lambda: [
+#         Route.get('/dashboard', [AdminController, 'index']).name('dashboard'),
+#     ])
+#
+# And the seven RESTful routes at once:
+#
+#     Route.resource('posts', PostController)

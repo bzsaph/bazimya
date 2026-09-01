@@ -1,0 +1,12 @@
+"""View configuration."""
+
+from bazimya import env
+
+config = {
+    # Where .baz.py templates live.
+    "paths": ["resources/views"],
+
+    # Compiled templates. Run `bazimya view:cache` before deploying to a host
+    # where this directory is not writable.
+    "compiled": env("VIEW_COMPILED_PATH", "storage/framework/views"),
+}

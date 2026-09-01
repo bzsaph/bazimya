@@ -1,0 +1,15 @@
+"""The User model."""
+
+from bazimya import Model
+
+
+class User(Model):
+    table = "users"
+
+    # Only these can be set from request data.
+    fillable = ["name", "email"]
+
+    # Never included in to_dict() or a JSON response.
+    hidden = ["password"]
+
+    casts = {"active": bool}

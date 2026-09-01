@@ -1,0 +1,5 @@
+/* Your stylesheet source.
+
+   Bazimya does not bundle an asset pipeline. Either edit public/css/app.css
+   directly, or point your own build (vite, esbuild, tailwind) at this file
+   with public/css/ as the output. */

@@ -1,0 +1,60 @@
+"""The {{name}} extension.
+
+An extension is a self-contained package: its own routes, controllers,
+commands, middleware, views and migrations. Drop the directory into
+extensions/ and it is live — there is nothing to register.
+
+Routes go inside @extension.routes rather than at module level so they can be
+registered under this extension's prefix and middleware.
+"""
+
+from bazimya import Extension, Response, Route
+
+extension = Extension(
+    "{{name}}",
+    version="0.1.0",
+    description="{{description}}",
+    prefix="{{prefix}}",
+)
+
+
+class {{name}}Controller(extension.Controller):
+    """Reads like any other controller, because it is one."""
+
+    def index(self, request):
+        return self.view(
+            "{{namespace}}::index",
+            name="{{name}}",
+            greeting=request.input("greeting", "Hello"),
+        )
+
+    def show(self, request, id):
+        return self.json({"id": id, "extension": "{{name}}"})
+
+    def store(self, request):
+        data = self.validate(request, {"title": "required|max:255"})
+
+        return self.json({"created": True, **data}, 201)
+
+
+@extension.routes
+def routes():
+    Route.get("/", [{{name}}Controller, "index"]).name("{{namespace}}.index")
+    Route.get("/{id}", [{{name}}Controller, "show"]).name("{{namespace}}.show").where_number("id")
+    Route.post("/", [{{name}}Controller, "store"]).name("{{namespace}}.store")
+
+
+@extension.middleware_alias("{{namespace}}.token")
+def require_token(request):
+    """Return None to let the request through, or a Response to stop it."""
+    if not request.bearer_token():
+        return Response.json({"error": "Unauthorised"}, 401)
+
+    return None
+
+
+@extension.command("{{namespace}}:hello", "Say hello from the {{name}} extension")
+def hello(args, options):
+    who = options.get("name") or (args[0] if args else "world")
+
+    return "Hello, {}! — from the {{name}} extension.".format(who)

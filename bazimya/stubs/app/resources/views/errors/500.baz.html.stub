@@ -1,0 +1,9 @@
+@extends('layouts.app')
+
+@section('title', 'Something went wrong')
+
+@section('content')
+    <h1>500 — Something went wrong</h1>
+    <p>The error has been logged. Please try again.</p>
+    <p><a href="/">Back home</a></p>
+@endsection

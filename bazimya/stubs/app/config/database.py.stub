@@ -1,0 +1,39 @@
+"""Database configuration.
+
+SQLite is the default because it needs nothing installed and no credentials —
+which matters on shared hosting, where adding a MySQL database is often a
+separate, paid step. Change DB_CONNECTION in .env to switch.
+"""
+
+from bazimya import env
+
+config = {
+    "default": env("DB_CONNECTION", "sqlite"),
+
+    "connections": {
+        "sqlite": {
+            "driver": "sqlite",
+            # Relative paths are resolved from the project root.
+            "database": env("DB_DATABASE", "database/database.sqlite"),
+        },
+
+        "mysql": {
+            "driver": "mysql",
+            "host": env("DB_HOST", "127.0.0.1"),
+            "port": env("DB_PORT", 3306),
+            "database": env("DB_DATABASE", ""),
+            "username": env("DB_USERNAME", ""),
+            "password": env("DB_PASSWORD", ""),
+            "charset": "utf8mb4",
+        },
+
+        "pgsql": {
+            "driver": "pgsql",
+            "host": env("DB_HOST", "127.0.0.1"),
+            "port": env("DB_PORT", 5432),
+            "database": env("DB_DATABASE", ""),
+            "username": env("DB_USERNAME", ""),
+            "password": env("DB_PASSWORD", ""),
+        },
+    },
+}

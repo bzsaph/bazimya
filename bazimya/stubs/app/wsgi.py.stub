@@ -1,0 +1,16 @@
+"""WSGI entry point for a VPS.
+
+    gunicorn wsgi:application --workers 3 --bind 127.0.0.1:8000
+
+Passenger uses passenger_wsgi.py instead; both build the same object.
+"""
+
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from bootstrap.app import create_app  # noqa: E402
+
+application = create_app()
+app = application

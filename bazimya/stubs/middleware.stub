@@ -1,0 +1,13 @@
+"""The {{name}} middleware."""
+
+from bazimya import Middleware, Response
+
+
+class {{name}}(Middleware):
+    def handle(self, request, next):
+        # Return a Response here to stop the request going any further.
+        #
+        #     if not request.bearer_token():
+        #         return Response.json({"error": "Unauthorised"}, 401)
+
+        return next(request)

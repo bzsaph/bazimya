@@ -1,0 +1,16 @@
+"""The {{name}} model."""
+
+from bazimya import Model
+
+
+class {{name}}(Model):
+    table = "{{table}}"
+
+    #: Only these may be set from request data.
+    fillable = []
+
+    #: Left out of to_dict() and JSON responses.
+    hidden = []
+
+    #: e.g. {"published": bool, "meta": "json"}
+    casts = {}

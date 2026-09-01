@@ -1,0 +1,11 @@
+"""The base controller every controller in this application extends.
+
+Put anything shared between controllers here — it is your file, not the
+framework's.
+"""
+
+from bazimya import Controller as BaseController
+
+
+class Controller(BaseController):
+    pass

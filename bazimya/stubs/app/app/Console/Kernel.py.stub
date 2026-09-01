@@ -1,0 +1,22 @@
+"""The console kernel.
+
+List your commands here and they become part of `bazimya` — they show up in
+`bazimya list` and run like any built-in.
+"""
+
+from app.Console.Commands import GreetCommand
+
+
+class Kernel:
+    commands = [
+        GreetCommand,
+    ]
+
+    def schedule(self, schedule):
+        """Where recurring work would be declared.
+
+        There is no scheduler yet, so nothing calls this. Drive periodic jobs
+        with cron for now:
+
+            * * * * * cd /path/to/app && python bazimya your:command
+        """

@@ -1,0 +1,22 @@
+"""The home controller."""
+
+from bazimya import Config
+
+from .Controller import Controller
+
+
+class HomeController(Controller):
+    def index(self, request):
+        return self.view(
+            "home",
+            name=Config.get("app.name", "Bazimya"),
+            greeting=request.input("greeting", "Hello"),
+        )
+
+    def about(self, request):
+        # Returning a dict gives you JSON without saying so.
+        return {
+            "framework": "Bazimya",
+            "language": "Python",
+            "app": Config.get("app.name"),
+        }

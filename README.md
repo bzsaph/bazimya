@@ -1,273 +1,467 @@
 # Bazimya
 
-A PHP framework with first-class Python services.
+**Laravel's structure. Python's language.**
 
-Bazimya borrows the architectural ideas that make Laravel pleasant — a container,
-expressive routing, a template engine, migrations, a generator CLI — and adds one
-thing PHP frameworks usually leave to glue code: **calling Python from PHP as a
-normal part of the application**.
+Same folders, same file names, same vocabulary — `app/Http/Controllers`,
+`routes/web`, `config/app`, `app/Console/Kernel`, `database/migrations`. The
+only differences are that the files end in `.py` instead of `.php`, templates
+are `.baz.html` instead of `.blade.php`, and the CLI is called `bazimya`
+instead of `artisan`.
 
-```php
-use Bazimya\Facades\Python;
+```python
+# routes/web.py
+from bazimya import Route
+from app.Http.Controllers import PostController
 
-$result = Python::call('AIService', ['message' => 'Hello']);
+Route.get('/posts', [PostController, 'index']).name('posts.index')
+Route.resource('posts', PostController)
 ```
 
-**Status: 0.1.0.** The API works and is tested end to end, but it will change
-before 1.0. Not recommended for production yet.
+```python
+# app/Http/Controllers/PostController.py
+from app.Models import Post
+
+from .Controller import Controller
+
+
+class PostController(Controller):
+    def index(self, request):
+        return self.view('posts.index', posts=Post.where('published', 1).latest().get())
+```
+
+```html
+<!-- resources/views/posts/index.baz.html -->
+@extends('layouts.app')
+
+@section('content')
+    @forelse post in posts
+        <article>{{ post.title }}</article>
+    @empty
+        <p>Nothing here yet.</p>
+    @endforelse
+@endsection
+```
+
+**Status: 0.2.0.** Working and tested end to end, but pre-1.0 and still moving.
+Not recommended for production yet.
 
 ---
 
 ## Requirements
 
-- PHP 8.2+ with `pdo` and `json`
-- Composer
-- Python 3.8+ (only if you use Python services)
+- Python 3.8+
+- Node 16+ *(optional — only for the `npx bazimya` wrapper)*
 
-## Installation
+Nothing else. The framework runs on the standard library alone, which is what
+makes it deployable to shared hosting where you cannot run `pip`.
 
-Bazimya is not on Packagist yet, so install it from source:
-
-```bash
-git clone <your-repo-url> bazimya
-cd bazimya
-composer install
-```
-
-Then put the CLI on your PATH:
+## Install
 
 ```bash
-ln -s "$(pwd)/bin/bazimya" /usr/local/bin/bazimya
-```
-
-Once published, this becomes:
-
-```bash
-composer global require bazimya/bazimya
-```
-
-## Creating an application
-
-```bash
+npm install -g bazimya      # or: pip install bazimya
 bazimya new blog
 cd blog
+bazimya migrate
 bazimya serve
 ```
 
 Open <http://127.0.0.1:8000>.
 
-Inside a project you can use the global `bazimya` or the local `php bazimya` —
-both run the same CLI.
+Inside a project you can use any of these — they all run the same code:
 
-## Project layout
+```bash
+bazimya serve          # global install
+npx bazimya serve      # npm, no install
+npm run serve          # the script in package.json
+python bazimya serve   # no Node at all
+```
+
+## Coming from Laravel
+
+| Laravel | Bazimya |
+| --- | --- |
+| `artisan` | `bazimya` |
+| `app/Http/Controllers/PostController.php` | `app/Http/Controllers/PostController.py` |
+| `app/Http/Middleware/`, `app/Http/Requests/` | same |
+| `app/Models/`, `app/Providers/`, `app/Rules/` | same |
+| `app/Console/Kernel.php`, `app/Console/Commands/` | same, `.py` |
+| `app/Exceptions/Handler.php` | `app/Exceptions/Handler.py` |
+| `routes/web.php`, `routes/api.php`, `routes/console.php` | same, `.py` |
+| `config/app.php`, `config/database.php` | same, `.py` |
+| `database/migrations|seeders|factories` | same |
+| `resources/views/home.blade.php` | `resources/views/home.baz.html` |
+| `bootstrap/app.php`, `public/`, `storage/`, `tests/` | same |
+| `Route::get(...)` | `Route.get(...)` |
+| `User::find($id)` | `User.find(id)` |
+| `$user->name` | `user.name` |
+| `composer install` | nothing to install |
+
+**Method names work either way.** Bazimya's own methods are snake_case, but
+every Laravel camelCase spelling resolves to the same call, so ported code
+runs unchanged:
+
+```python
+User.where('active', 1).orderBy('name').firstOrFail()    # Laravel's spelling
+User.where('active', 1).order_by('name').first_or_fail() # identical
+```
+
+Python has no `::`, so `Route::get` becomes `Route.get` — one character. That
+is the largest syntactic difference in the framework.
+
+## Layout
 
 ```
 blog/
 ├── app/
-│   ├── Controllers/
-│   └── Models/
-├── config/            app.php, database.php, python.php
+│   ├── Console/
+│   │   ├── Commands/
+│   │   └── Kernel.py           your CLI commands
+│   ├── Exceptions/Handler.py
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   ├── Requests/           form requests
+│   │   └── Kernel.py           middleware stacks, groups, aliases
+│   ├── Models/
+│   ├── Providers/
+│   ├── Rules/                  custom validation rules
+│   ├── Services/
+│   └── Support/
+├── bootstrap/app.py            builds the application
+├── config/                     app, database, view, logging, extensions
 ├── database/
-│   └── migrations/
-├── public/            document root; index.php is the front controller
-├── python/
-│   ├── bazimya_bridge.py
-│   └── services/      one file per Python service
+│   ├── factories/  migrations/  seeders/
+├── extensions/                 drop-in packages
+├── public/                     document root; index.py is the CGI fallback
 ├── resources/
-│   └── views/         *.bazimya.php templates
-├── routes/
-│   └── web.php
-├── storage/           compiled views, logs
+│   ├── css/  js/
+│   └── views/                  *.baz.html
+├── routes/                     web.py, api.py, console.py
+├── storage/                    compiled views, logs
+├── tests/                      Feature/, Unit/
 ├── .env
-├── bazimya            project-local CLI
-└── server.php         dev-server router
+├── bazimya                     the CLI (Laravel's artisan)
+├── passenger_wsgi.py           cPanel entry point
+└── wsgi.py                     gunicorn entry point
+```
+
+Controllers, models, middleware, requests and commands each live in a file
+named after the class, and are importable straight away — nothing to register:
+
+```python
+from app.Http.Controllers import PostController
+from app.Models import Post
 ```
 
 ## Routing
 
-```php
-use Bazimya\Facades\Route;
+```python
+from bazimya import Route
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::post('/posts', [PostController::class, 'store']);
-Route::get('/posts/{id}', [PostController::class, 'show']);
-Route::get('/hello/{name?}', fn ($request, $name = null) => "Hi {$name}");
+Route.get('/', [HomeController, 'index']).name('home')
+Route.post('/posts', [PostController, 'store'])
+Route.get('/posts/{id}', [PostController, 'show']).where_number('id')
+Route.get('/posts/{slug?}', [PostController, 'show'])       # optional
+Route.resource('posts', PostController)                     # the seven RESTful routes
+Route.api_resource('posts', PostController)                 # minus create/edit
 
-Route::group(['prefix' => 'api', 'middleware' => [EnsureToken::class]], function () {
-    Route::get('/status', fn () => ['status' => 'ok']);
-});
+Route.middleware('auth').prefix('admin').name('admin.').group(lambda: [
+    Route.get('/dashboard', [AdminController, 'index']).name('dashboard'),
+])
 ```
 
-Return a `Response`, a string, or an array (arrays become JSON automatically).
+Return a `Response`, a string, or a dict/list — dicts become JSON
+automatically. Route parameters arrive as named arguments:
 
-Middleware is any class with a `handle` method:
-
-```php
-class EnsureToken implements Bazimya\Http\Middleware
-{
-    public function handle(Request $request, Closure $next): Response
-    {
-        if ($request->header('X-Token') !== 'secret') {
-            return Response::json(['error' => 'Unauthorised'], 401);
-        }
-
-        return $next($request);
-    }
-}
+```python
+def show(self, request, id):
+    return {'id': id}
 ```
+
+`routes/api.py` is loaded under `/api` with the `api` middleware group, exactly
+as Laravel's `RouteServiceProvider` does it.
+
+### Middleware
+
+```python
+from bazimya import Middleware, Response
+
+
+class EnsureToken(Middleware):
+    def handle(self, request, next):
+        if request.bearer_token() != 'secret':
+            return Response.json({'error': 'Unauthorised'}, 401)
+
+        return next(request)
+```
+
+Register it in `app/Http/Kernel.py` under `middleware`, `middleware_groups` or
+`middleware_aliases`, then use it by name: `.middleware('auth')`.
 
 ## Views
 
-Templates live in `resources/views` and end in `.bazimya.php`.
+Templates live in `resources/views` and end in `.baz.html`. The syntax is
+Blade's; the expressions are Python.
 
-```php
+```html
 @extends('layouts.app')
 
-@section('title'){{ $title }}@endsection
+@section('title', 'Posts')
 
 @section('content')
-    <h1>{{ $title }}</h1>
+    <h1>{{ title }}</h1>
 
-    @if (count($posts) > 0)
-        @foreach ($posts as $post)
-            <article>{{ $post['title'] }}</article>
-        @endforeach
+    @if len(posts) > 10
+        <p>Quite a lot.</p>
+    @elseif len(posts) > 0
+        <p>A few.</p>
     @else
-        <p>Nothing here yet.</p>
+        <p>None.</p>
     @endif
 
-    @include('partials.footer')
+    @foreach post in posts
+        <article>{{ post.title }} — {{ post['author'] }}</article>
+    @endforeach
+
+    @forelse comment in comments
+        <li>{{ comment.body }}</li>
+    @empty
+        <li>No comments.</li>
+    @endforelse
+
+    @include('partials.footer', {'year': 2026})
 @endsection
 ```
 
-`{{ }}` escapes, `{!! !!}` does not. Compiled templates are cached in
-`storage/framework/views` and recompiled when the source changes.
+`{{ }}` escapes, `{!! !!}` does not, `{{-- --}}` is a comment. Also available:
+`@unless`, `@isset`, `@while`, `@each`, `@yield`, `@show`, `@parent`,
+`@verbatim`, `@csrf`, `@method('PUT')`, `@json(data)`, `@dump(x)`, `@route`,
+`@asset`, `@config`, and `@python … @endpython` for a block of real Python.
+
+Templates compile to Python and are cached in `storage/framework/views`.
+
+Writing `{{ $title }}` or `post->title` out of habit gives you a message
+saying so, with the Python spelling, rather than a syntax error.
 
 ## Database
 
 SQLite by default — the file is created on first use, so there is nothing to
-install. Change `DB_CONNECTION` in `.env` for MySQL or Postgres.
+install. Change `DB_CONNECTION` in `.env` for MySQL (`pip install PyMySQL`) or
+Postgres (`pip install psycopg2-binary`).
 
 **Query builder:**
 
-```php
-use Bazimya\Facades\DB;
+```python
+from bazimya import DB
 
-DB::table('users')->where('active', 1)->orderBy('name')->limit(10)->get();
-DB::table('users')->insert(['name' => 'James', 'email' => 'j@example.com']);
-DB::table('users')->where('id', 3)->update(['name' => 'James M.']);
+DB.table('users').where('active', 1).order_by('name').limit(10).get()
+DB.table('users').where('age', '>=', 18).count()
+DB.table('users').insert({'name': 'James', 'email': 'j@example.com'})
+DB.table('users').where('id', 3).update({'name': 'James M.'})
 ```
+
+Values are always bound. Column and table names are validated as identifiers
+rather than interpolated, so a column name arriving from request data cannot
+become SQL.
 
 **Models:**
 
-```php
-class User extends Bazimya\Database\Model
-{
-    protected string $table = 'users';
-    protected array $fillable = ['name', 'email'];
-    protected array $hidden = ['password'];
-}
+```python
+from bazimya import Model
 
-$user = User::create(['name' => 'James', 'email' => 'j@example.com']);
-$user = User::find(1);
-$user->name = 'James M.';
-$user->save();
+
+class User(Model):
+    table = 'users'
+    fillable = ['name', 'email']
+    hidden = ['password']
+    casts = {'active': bool}
+
+
+user = User.create({'name': 'James', 'email': 'j@example.com'})
+user = User.find(1)
+user.name = 'James M.'
+user.save()
+
+User.where('active', 1).order_by('name').get()
+User.find_or_fail(3)
+User.first_or_create({'email': 'a@b.c'}, {'name': 'Ada'})
+User.paginate(page=2, per_page=15)
 ```
 
-**Migrations** are plain SQL in 0.1:
+**Migrations** use a schema builder:
 
-```php
-return new class extends Bazimya\Database\Migration {
-    public function up(): void
-    {
-        $this->execute('CREATE TABLE "posts" ("id" INTEGER PRIMARY KEY AUTOINCREMENT)');
-    }
+```python
+from bazimya import Migration, Schema
 
-    public function down(): void
-    {
-        $this->execute('DROP TABLE IF EXISTS "posts"');
-    }
-};
+
+class CreatePostsTable(Migration):
+    def up(self):
+        with Schema.create('posts') as table:
+            table.id()
+            table.string('title')
+            table.text('body').nullable()
+            table.foreign_id('user_id').references('id').on('users').on_delete('cascade')
+            table.boolean('published').default(False)
+            table.timestamps()
+
+    def down(self):
+        Schema.drop_if_exists('posts')
 ```
 
 ```bash
 bazimya migrate
-bazimya migrate:rollback
+bazimya migrate:rollback --step=2
+bazimya migrate:fresh --seed
+bazimya migrate:status
 ```
 
-## Python services
-
-A service is a file in `python/services/` exposing `handle(payload)`:
+## Validation
 
 ```python
-# python/services/AIService.py
-def handle(payload):
-    return {"reply": "Hello from Python!", "got": payload.get("message")}
+data = self.validate(request, {
+    'title': 'required|max:255',
+    'email': 'required|email|unique:users,email',
+    'age':   'nullable|integer|min:18',
+})
 ```
 
-Call it from PHP:
+A failure raises `ValidationException`, which becomes a 422 with the messages
+attached. Rules can also live in a form request (`app/Http/Requests`) or a rule
+class (`app/Rules`):
 
-```php
-$result = Python::call('AIService', ['message' => 'Hello']);
-// ['reply' => 'Hello from Python!', 'got' => 'Hello']
+```python
+class StorePostRequest(FormRequest):
+    def authorize(self, request):
+        return True
+
+    def rules(self):
+        return {'title': 'required|max:255'}
+
+
+def store(self, request):
+    data = StorePostRequest.validate(request)
 ```
 
-Or from the CLI:
+## Extensions
+
+An extension is a package under `extensions/` that brings its own routes,
+controllers, commands, middleware, views and migrations. Drop the directory in
+and it is live — there is nothing to register.
 
 ```bash
-bazimya python:call AIService --message=Hello
-bazimya python:list
+bazimya make:extension Blog
 ```
 
-**How it works:** PHP runs `python3 python/bazimya_bridge.py <Service>`, writes
-the payload as JSON to stdin, and reads a JSON envelope from stdout. Anything a
-service `print`s is redirected to stderr so it cannot corrupt the response.
+```python
+# extensions/Blog/__init__.py
+from bazimya import Extension, Route
 
-**Trade-off:** one process per call. That is simple and needs no daemon, port or
-supervisor, but it pays interpreter startup (~30-50 ms) every time. A persistent
-worker pool is planned; `Python::call()` will not change when it lands.
+extension = Extension('Blog', version='1.0.0', prefix='blog')
 
-To give services their own dependencies, point `PYTHON_BINARY` at a virtualenv:
 
+class PostController(extension.Controller):
+    def index(self, request):
+        return self.view('blog::index', posts=[])
+
+
+@extension.routes
+def routes():
+    Route.get('/', [PostController, 'index']).name('blog.index')
+
+
+@extension.command('blog:publish', 'Publish scheduled posts')
+def publish(args, options):
+    return 'Published.'
 ```
-PYTHON_BINARY=python/.venv/bin/python
+
+Its views are addressed as `blog::index` and can extend the application's own
+layouts. Override any of them by creating
+`resources/views/vendor/blog/index.baz.html`. Its migrations are picked up by
+`bazimya migrate`; its commands appear in `bazimya list`.
+
+Application routes are registered before extension routes, so your own route
+always wins on a shared URI.
+
+## Deploying
+
+```bash
+bazimya build            # VPS: gunicorn + nginx
+bazimya build --shared   # shared hosting: cPanel
 ```
+
+Both produce a `build/` directory that is ready to upload, and a `DEPLOY.md`
+inside it with the steps for that target. The build:
+
+- vendors the framework into `vendor/`, so the server needs no `pip`;
+- compiles every template ahead of time, so `storage/` can be read-only;
+- rewrites `.env` with `APP_ENV=production`, `APP_DEBUG=false` and every
+  secret blanked;
+- writes `.htaccess` files that keep `app/`, `config/`, `storage/`,
+  `database/`, `extensions/` and `vendor/` out of the web root.
+
+**Shared hosting (cPanel).** If the host has **Setup Python App**, point it at
+`passenger_wsgi.py` with entry point `application`. If it does not, the app
+still runs: `public/index.py` serves it over CGI. Neither needs SSH.
+
+Since shared hosting has no shell, run `bazimya migrate` locally and upload
+`database/database.sqlite`, or point it at your MySQL database and migrate
+against that.
+
+**VPS.** The build includes `nginx.conf.example` and `bazimya.service.example`.
+
+```bash
+gunicorn wsgi:application --workers 3 --bind 127.0.0.1:8000
+```
+
+`bazimya doctor` checks an environment and reports what will bite — writable
+directories, debug left on in production, a SQLite file inside `public/`, a
+missing template cache.
 
 ## CLI
 
 ```
-bazimya new <name>                  Create a new application
-bazimya serve [--host] [--port]     Development server
-bazimya make:controller <Name>      [--resource]
-bazimya make:model <Name>           [--migration]
-bazimya make:migration <name>
-bazimya make:python-service <Name>
-bazimya migrate
-bazimya migrate:rollback
-bazimya route:list
-bazimya python:call <Service> [--key=value]
-bazimya python:list
+bazimya new <name>                    Create an application
+bazimya serve [--host] [--port]       Development server, with auto-reload
+bazimya build [--shared] [--zip]      Build for deployment
+bazimya doctor                        Check the environment
+bazimya tinker                        REPL with the app booted
+
+bazimya make:controller <Name>        [--resource] [--api] [--model=Post]
+bazimya make:model <Name>             [-m] [-c]
+bazimya make:migration <name>         [--create=table] [--table=table]
+bazimya make:middleware <Name>
+bazimya make:request <Name>
+bazimya make:rule <Name>
+bazimya make:provider <Name>
+bazimya make:seeder <Name>
+bazimya make:command <Name>           [--command=my:name]
+bazimya make:extension <Name>         [--prefix=blog]
+
+bazimya migrate                       [--pretend] [--seed]
+bazimya migrate:rollback              [--step=1]
+bazimya migrate:fresh                 [--seed]
+bazimya migrate:status
+bazimya db:seed                       [--class=DatabaseSeeder]
+
+bazimya route:list                    [--method] [--path] [--name]
+bazimya extension:list                [--commands]
+bazimya view:cache
 bazimya cache:clear
 ```
 
-## Publishing to Packagist
+## What is not here yet
 
-1. Push this repository to GitHub.
-2. Tag a release: `git tag v0.1.0 && git push --tags`.
-3. Submit the repo URL at <https://packagist.org/packages/submit>.
-4. Add the GitHub webhook Packagist offers, so new tags publish automatically.
+Being explicit, so nothing is discovered the hard way:
 
-After that, `composer global require bazimya/bazimya` works, and generated apps
-no longer need the `repositories` block in their `composer.json`.
-
-## Roadmap
-
-- Schema builder, so migrations stop being raw SQL
-- Sessions, authentication and CSRF protection
-- Persistent Python workers instead of process-per-call
-- Validation
-- A test harness for HTTP and CLI
-- Relationships on models
+- **No authentication.** No `auth` scaffolding, sessions, hashing or guards.
+- **No mail, queues, events, broadcasting or scheduling.** Use cron for
+  periodic work: `* * * * * cd /path/to/app && python bazimya your:command`.
+- **No relationships on models.** `has_many` / `belongs_to` are not
+  implemented; use the query builder for joins.
+- **No CSRF verification.** `@csrf` renders a field, but nothing checks it yet.
+- **No asset pipeline.** `resources/css` and `resources/js` are yours to point
+  a build at; `public/` is served as-is.
+- **No test harness.** `tests/` is scaffolded; use pytest.
 
 ## Licence
 

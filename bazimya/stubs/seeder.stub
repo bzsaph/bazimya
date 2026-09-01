@@ -1,0 +1,6 @@
+"""The {{name}} seeder."""
+
+
+class {{name}}:
+    def run(self):
+        pass

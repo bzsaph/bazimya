@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bazimya"
+version = "0.2.0"
+description = "A Python web framework with Laravel's structure."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["framework", "web", "mvc", "laravel", "wsgi"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Bazimya",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+]
+
+# The framework runs on the standard library alone. Database drivers beyond
+# SQLite are optional, because a shared host that cannot pip install anything
+# still has to be able to run this.
+dependencies = []
+
+[project.optional-dependencies]
+mysql = ["PyMySQL>=1.1"]
+postgres = ["psycopg2-binary>=2.9"]
+server = ["gunicorn>=21.2"]
+
+[project.scripts]
+bazimya = "bazimya.console.kernel:main"
+
+[tool.setuptools.packages.find]
+include = ["bazimya*"]
+
+[tool.setuptools.package-data]
+bazimya = ["stubs/**/*"]

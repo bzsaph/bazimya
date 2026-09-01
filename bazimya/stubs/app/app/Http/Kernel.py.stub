@@ -1,0 +1,37 @@
+"""The HTTP kernel.
+
+Declares which middleware runs, in what order, and under what names — the
+same three lists Laravel's app/Http/Kernel.php has.
+"""
+
+from bazimya.http.middleware import (
+    ConvertEmptyStringsToNull,
+    HandleCors,
+    SecurityHeaders,
+    TrimStrings,
+)
+
+
+class Kernel:
+    #: Runs on every request, in this order.
+    middleware = [
+        SecurityHeaders,
+        TrimStrings,
+        ConvertEmptyStringsToNull,
+    ]
+
+    #: Applied by name. `web` is implicit for routes/web.py; `api` is applied
+    #: to routes/api.py automatically.
+    middleware_groups = {
+        "web": [
+            # Add middleware that only browser-facing routes need.
+        ],
+        "api": [
+            HandleCors,
+        ],
+    }
+
+    #: Short names usable on any route: .middleware('auth')
+    middleware_aliases = {
+        # 'auth': Authenticate,
+    }

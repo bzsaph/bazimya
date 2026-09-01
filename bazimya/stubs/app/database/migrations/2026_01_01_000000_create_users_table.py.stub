@@ -1,0 +1,17 @@
+"""Create the users table."""
+
+from bazimya import Migration, Schema
+
+
+class CreateUsersTable(Migration):
+    def up(self):
+        with Schema.create("users") as table:
+            table.id()
+            table.string("name")
+            table.string("email").unique()
+            table.string("password").nullable()
+            table.boolean("active").default(True)
+            table.timestamps()
+
+    def down(self):
+        Schema.drop_if_exists("users")

@@ -1,0 +1,41 @@
+"""Application configuration.
+
+Every file in config/ defines a `config` dict, and its filename becomes the
+first key: this one is reachable as config('app.name').
+"""
+
+from bazimya import env
+
+config = {
+    # ------------------------------------------------------------------
+    # Identity
+    # ------------------------------------------------------------------
+    "name": env("APP_NAME", "{{name}}"),
+    "env": env("APP_ENV", "production"),
+    "url": env("APP_URL", "http://127.0.0.1:8000"),
+    "timezone": env("APP_TIMEZONE", "UTC"),
+    "key": env("APP_KEY", ""),
+
+    # ------------------------------------------------------------------
+    # Debug
+    #
+    # With this on, an unhandled error renders a full stack trace. That trace
+    # can contain database credentials, so it must be off in production.
+    # ------------------------------------------------------------------
+    "debug": env("APP_DEBUG", False),
+
+    # ------------------------------------------------------------------
+    # Routing
+    # ------------------------------------------------------------------
+    "api_prefix": env("API_PREFIX", "api"),
+
+    # ------------------------------------------------------------------
+    # Service providers
+    #
+    # register() runs on all of them first, then boot() — so a provider may
+    # depend on anything another one registered.
+    # ------------------------------------------------------------------
+    "providers": [
+        "app.Providers.AppServiceProvider.AppServiceProvider",
+    ],
+}

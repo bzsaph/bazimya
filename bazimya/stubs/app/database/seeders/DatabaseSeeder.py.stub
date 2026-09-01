@@ -1,0 +1,11 @@
+"""The default seeder, run by `bazimya db:seed`."""
+
+from app.Models import User
+
+
+class DatabaseSeeder:
+    def run(self):
+        User.first_or_create(
+            {"email": "you@example.com"},
+            {"name": "Example User"},
+        )

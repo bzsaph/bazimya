@@ -1,0 +1,33 @@
+# Bazimya — front controller rules for Apache / LiteSpeed.
+#
+# Used when the document root points at this directory. Passenger, when the
+# host offers it, intercepts before any of this and none of it applies.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Serve real files and directories directly.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Everything else goes to the CGI front controller.
+    RewriteRule ^ index.py [L]
+</IfModule>
+
+# Some CGI setups drop the Authorization header, which is why bearer tokens
+# "work locally but not on the host".
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+AddHandler cgi-script .py
+Options +ExecCGI -Indexes

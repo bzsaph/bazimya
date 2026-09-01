@@ -1,0 +1,24 @@
+"""Console commands, resolved by file name.
+
+    from app.Console.Commands import GreetCommand
+"""
+
+import importlib
+import sys
+
+
+def __getattr__(name):
+    try:
+        module = importlib.import_module("." + name, __name__)
+    except ImportError as error:
+        raise AttributeError(
+            "No command named [{}] in app/Console/Commands.".format(name)
+        ) from error
+
+    value = getattr(module, name)
+
+    # Rebind over the submodule the import bound here, or the name would
+    # resolve to the module rather than the class.
+    setattr(sys.modules[__name__], name, value)
+
+    return value

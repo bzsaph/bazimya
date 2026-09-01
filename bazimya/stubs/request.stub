@@ -1,0 +1,19 @@
+"""The {{name}} form request."""
+
+from bazimya import FormRequest
+
+
+class {{name}}(FormRequest):
+    def authorize(self, request):
+        """Return False to answer 403 before validation runs."""
+        return True
+
+    def rules(self):
+        return {
+            # "title": "required|max:255",
+        }
+
+    def messages(self):
+        return {
+            # "title.required": "Give it a title.",
+        }

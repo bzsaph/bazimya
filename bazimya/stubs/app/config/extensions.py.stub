@@ -1,0 +1,17 @@
+"""Extension configuration.
+
+Extensions are packages under extensions/. Each declares its own routes,
+commands, middleware, views and migrations.
+"""
+
+from bazimya import env
+
+config = {
+    "enabled": env("EXTENSIONS_ENABLED", True),
+
+    # Leave empty to load everything found in extensions/.
+    "only": [],
+
+    # Names listed here are skipped even when present.
+    "disabled": [],
+}

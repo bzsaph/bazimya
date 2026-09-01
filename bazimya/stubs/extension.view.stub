@@ -1,0 +1,20 @@
+@extends('layouts.app')
+
+@section('title'){{ name }}@endsection
+
+@section('content')
+    <h1>{{ greeting }} from {{ name }}</h1>
+
+    <p>
+        This page came from an extension. The handler is in
+        <code>extensions/{{ name }}/__init__.py</code>, and this template lives
+        beside it in <code>extensions/{{ name }}/views/index.baz.py</code>.
+    </p>
+
+    <p>
+        It is addressed as <code>{{ name.lower() }}::index</code>. To change it
+        without touching the extension, drop a file at
+        <code>resources/views/vendor/{{ name.lower() }}/index.baz.py</code> —
+        the application's copy wins.
+    </p>
+@endsection

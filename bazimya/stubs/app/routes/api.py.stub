@@ -1,0 +1,12 @@
+"""API routes.
+
+Loaded under the /api prefix with the `api` middleware group, the same way
+Laravel's RouteServiceProvider does it. A route defined here as '/status' is
+served at /api/status.
+"""
+
+from bazimya import Route
+
+Route.get("/status", lambda request: {"status": "ok"})
+
+# Route.api_resource('posts', PostController)

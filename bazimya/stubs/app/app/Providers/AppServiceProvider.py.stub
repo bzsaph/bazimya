@@ -1,0 +1,14 @@
+"""The application's own service provider."""
+
+from bazimya import Config, ServiceProvider, View
+
+
+class AppServiceProvider(ServiceProvider):
+    def register(self):
+        """Bind things into the container. Nothing is resolved here — other
+        providers may not have registered yet."""
+
+    def boot(self):
+        """Runs once every provider has registered."""
+        # Data shared with every template.
+        View.share("app_name", Config.get("app.name"))

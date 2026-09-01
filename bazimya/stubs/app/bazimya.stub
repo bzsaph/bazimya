@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""The project's own CLI — Bazimya's artisan.
+
+    python bazimya serve
+    python bazimya make:controller PostController --resource
+    python bazimya migrate
+
+The npm wrapper (`npx bazimya serve`, `npm run serve`) ends up here too; this
+file is what runs either way, so both routes behave identically.
+"""
+
+import os
+import sys
+
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
+
+# A framework bundled into the project by `bazimya build`, for hosts with no pip.
+_VENDORED = os.path.join(BASE_PATH, "vendor")
+
+if os.path.isdir(_VENDORED):
+    try:
+        import bazimya  # noqa: F401
+    except ImportError:
+        sys.path.insert(0, _VENDORED)
+
+try:
+    from bazimya.console.kernel import Kernel
+except ImportError:
+    sys.stderr.write(
+        "Bazimya is not installed for this interpreter ({}).\n\n"
+        "Install it with one of:\n"
+        "    pip install bazimya\n"
+        "    npm install bazimya\n".format(sys.executable)
+    )
+    sys.exit(1)
+
+if __name__ == "__main__":
+    sys.exit(Kernel().run(sys.argv))

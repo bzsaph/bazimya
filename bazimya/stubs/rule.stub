@@ -1,0 +1,11 @@
+"""The {{name}} validation rule."""
+
+from bazimya import Rule
+
+
+class {{name}}(Rule):
+    def passes(self, field, value):
+        return True
+
+    def message(self, field):
+        return "The {} field is invalid.".format(field.replace("_", " "))

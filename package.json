@@ -1,0 +1,35 @@
+{
+  "name": "bazimya",
+  "version": "0.2.0",
+  "description": "A Python web framework with Laravel's structure. Deploys to a VPS or to shared hosting with no shell.",
+  "keywords": [
+    "framework",
+    "python",
+    "mvc",
+    "laravel",
+    "wsgi",
+    "shared-hosting",
+    "cpanel",
+    "passenger",
+    "bazimya"
+  ],
+  "license": "MIT",
+  "bin": {
+    "bazimya": "bin/bazimya.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "bazimya/",
+    "README.md",
+    "LICENSE"
+  ],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}

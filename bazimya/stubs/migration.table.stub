@@ -1,0 +1,13 @@
+"""Alter the {{table}} table."""
+
+from bazimya import Migration, Schema
+
+
+class {{class}}(Migration):
+    def up(self):
+        with Schema.table("{{table}}") as table:
+            pass
+
+    def down(self):
+        with Schema.table("{{table}}") as table:
+            pass

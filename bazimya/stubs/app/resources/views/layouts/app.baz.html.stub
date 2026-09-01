@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', 'Bazimya')</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+    <header class="site">
+        <a class="brand" href="/">{{ app_name }}</a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+
+    <main>
+        @yield('content')
+    </main>
+
+    <footer class="site">
+        @yield('footer', 'Built with Bazimya.')
+    </footer>
+</body>
+</html>

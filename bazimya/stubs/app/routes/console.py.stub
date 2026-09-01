@@ -1,0 +1,12 @@
+"""Console routes — closure-style commands.
+
+For anything bigger than a few lines, prefer a class in
+app/Console/Commands and list it in app/Console/Kernel.py.
+"""
+
+from bazimya import Console
+
+
+@Console.command("inspire", "Display an inspiring quote")
+def inspire(args, options):
+    return "Simplicity is the ultimate sophistication. — Leonardo da Vinci"

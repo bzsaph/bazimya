@@ -1,0 +1,11 @@
+"""The {{name}}."""
+
+from bazimya import ServiceProvider
+
+
+class {{name}}(ServiceProvider):
+    def register(self):
+        """Bind things into the container. Do not resolve anything here."""
+
+    def boot(self):
+        """Runs after every provider has registered."""
