@@ -1,0 +1,27 @@
+"""Filesystem configuration.
+
+`local` is private: nothing under storage/app is reachable over HTTP.
+`public` is for files you intend to serve — symlink public/storage to
+storage/app/public, or configure the web server to serve it.
+"""
+
+from bazimya import env
+
+config = {
+    "default": env("FILESYSTEM_DISK", "local"),
+
+    "disks": {
+        "local": {
+            "driver": "local",
+            "root": "storage/app",
+            "visibility": "private",
+        },
+
+        "public": {
+            "driver": "local",
+            "root": "storage/app/public",
+            "url": env("APP_URL", "") + "/storage",
+            "visibility": "public",
+        },
+    },
+}

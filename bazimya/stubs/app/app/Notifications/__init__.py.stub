@@ -1,0 +1,21 @@
+"""Notifications, resolved by file name.
+
+    from app.Notifications import WelcomeNotification
+"""
+
+import importlib
+import sys
+
+
+def __getattr__(name):
+    try:
+        module = importlib.import_module("." + name, __name__)
+    except ImportError as error:
+        raise AttributeError(
+            "No notification named [{}] in app/Notifications.".format(name)
+        ) from error
+
+    value = getattr(module, name)
+    setattr(sys.modules[__name__], name, value)
+
+    return value

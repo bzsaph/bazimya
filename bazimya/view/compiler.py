@@ -174,6 +174,15 @@ class Compiler:
                 position = end + 2
                 continue
 
+            # Components: <x-alert type="error">…</x-alert>
+            if source.startswith("<x-", position):
+                consumed = self._component(source, position, buffer, line)
+
+                if consumed is not None:
+                    position, line = consumed
+
+                    continue
+
             # Directives: @name, @name(...), @name expression
             if character == "@":
                 match = re.match(r"@([A-Za-z_][A-Za-z0-9_]*)", source[position:])
@@ -213,6 +222,98 @@ class Compiler:
             position += 1
 
         self._flush(buffer)
+
+    def _component(self, source, position, buffer, line):
+        """Compile one <x-name> tag. Returns (position, line) or None.
+
+        Returning None lets the scanner fall through and treat the text as
+        ordinary markup, so `<x-` in prose does not become a syntax error.
+        """
+        from .components import OPENING, find_closing, parse_attributes
+
+        match = OPENING.match(source, position)
+
+        if not match:
+            return None
+
+        name = match.group("name")
+        static, bound = parse_attributes(match.group("attributes"))
+        self_closing = match.group("close") == "/"
+
+        if self_closing:
+            slot = ""
+            end = match.end()
+        else:
+            body_start = match.end()
+            closing = find_closing(source, name, body_start)
+
+            if closing == -1:
+                raise TemplateSyntaxError(
+                    "<x-{}> was never closed (expected </x-{}>)".format(name, name),
+                    self.template_name,
+                    line,
+                )
+
+            slot = source[body_start:closing]
+            end = closing + len("</x-{}>".format(name))
+
+        self._flush(buffer)
+
+        # The slot is template source in its own right, so it is compiled by a
+        # nested pass and handed over as rendered text.
+        slot_expression = self._compile_slot(slot, name, line)
+
+        self._emit(
+            "__append(__view.component({!r}, {!r}, {{{}}}, {}, __ctx))".format(
+                name,
+                static,
+                ", ".join("{!r}: ({})".format(k, v) for k, v in bound.items()),
+                slot_expression,
+            )
+        )
+
+        consumed = source.count("\n", position, end)
+
+        if end < len(source) and source[end] == "\n":
+            end += 1
+            consumed += 1
+
+        return end, line + consumed
+
+    def _compile_slot(self, slot, name, line):
+        """Render a component's inner content into a string expression."""
+        if not slot.strip():
+            return "''"
+
+        inner = Compiler("{} (slot of <x-{}>)".format(self.template_name, name))
+        compiled = inner.compile(slot)
+
+        # The slot becomes a nested function so it can close over the same
+        # scope the surrounding template has — a loop variable used inside a
+        # component still resolves.
+        body = compiled.replace("def __bazimya_template__():", "").strip("\n")
+        variable = self._unique("slot")
+
+        self._emit("def {}():".format(variable))
+        self._indent += 1
+        self._emit("__parts = []")
+        self._emit("__append = __parts.append")
+
+        for statement in body.splitlines():
+            # The inner compiler indented for its own function; re-indent to
+            # this one's level.
+            self._emit(statement[4:] if statement.startswith("    ") else statement)
+
+        self._emit("return ''.join(__parts)")
+        self._indent -= 1
+
+        # No rebinding of __append out here: assigning it anywhere in the
+        # enclosing function would make it local for the *whole* function, and
+        # every append before this point would fail with UnboundLocalError.
+        # The nested def's own assignment is scoped to that def, so the outer
+        # __append still resolves to the one passed in as a global.
+
+        return "{}()".format(variable)
 
     def _raw_block(self, source, position, name, line):
         """Consume @python…@endpython or @verbatim…@endverbatim verbatim.

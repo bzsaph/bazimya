@@ -1,0 +1,20 @@
+"""Authentication routes.
+
+Loaded by routes/web.py. Delete this file and the AuthController if the app
+does not need accounts.
+"""
+
+from bazimya import Route
+
+from app.Http.Controllers import AuthController
+
+Route.middleware("guest").group(lambda: [
+    Route.get("/login", [AuthController, "show_login"]).name("login"),
+    Route.post("/login", [AuthController, "login"]),
+    Route.get("/register", [AuthController, "show_register"]).name("register"),
+    Route.post("/register", [AuthController, "register"]),
+])
+
+Route.middleware("auth").group(lambda: [
+    Route.post("/logout", [AuthController, "logout"]).name("logout"),
+])

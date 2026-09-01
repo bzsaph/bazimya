@@ -1,0 +1,22 @@
+"""View components, resolved by file name.
+
+A component named <x-alert> looks for Alert.py here. Components without a
+class work on their own — the template alone is enough.
+"""
+
+import importlib
+import sys
+
+
+def __getattr__(name):
+    try:
+        module = importlib.import_module("." + name, __name__)
+    except ImportError as error:
+        raise AttributeError(
+            "No component named [{}] in app/View/Components.".format(name)
+        ) from error
+
+    value = getattr(module, name)
+    setattr(sys.modules[__name__], name, value)
+
+    return value

@@ -1,0 +1,15 @@
+"""Event to listener bindings."""
+
+from bazimya import Event, ServiceProvider
+
+
+class EventServiceProvider(ServiceProvider):
+    #: Event class or name -> list of listeners.
+    listen = {
+        # "UserRegistered": [SendWelcomeEmail],
+    }
+
+    def boot(self):
+        for event, listeners in self.listen.items():
+            for listener in listeners:
+                Event.listen(event, listener)

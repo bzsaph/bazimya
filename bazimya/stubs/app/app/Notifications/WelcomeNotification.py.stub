@@ -1,0 +1,28 @@
+"""An example notification.
+
+    from bazimya import Notify
+    from app.Notifications import WelcomeNotification
+
+    Notify.send(user, WelcomeNotification())
+
+The `database` channel needs a notifications table:
+
+    bazimya make:migration create_notifications_table --create=notifications
+"""
+
+from bazimya import Notification
+
+
+class WelcomeNotification(Notification):
+    def via(self, notifiable):
+        # Add 'database' once the notifications table exists.
+        return ["mail"]
+
+    def to_mail(self, notifiable):
+        return {
+            "subject": "Welcome aboard",
+            "html": "<p>Hello {}, thanks for signing up.</p>".format(notifiable.name),
+        }
+
+    def to_array(self, notifiable):
+        return {"message": "Welcome aboard"}

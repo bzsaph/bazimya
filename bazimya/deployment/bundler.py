@@ -5,7 +5,8 @@ cannot run pip, you cannot run the CLI, and you often cannot move the document
 root. So everything that would normally happen on the server happens here —
 
   - the framework is copied into vendor/, and bootstrap/app.py finds it there;
-  - templates are compiled ahead of time, so storage/ can be read-only;
+  - templates are compiled ahead of time, so storage/framework/views can be
+    read-only (sessions and logs still need to be writable);
   - .env values are stripped, with APP_DEBUG forced off;
   - .htaccess files are written for routing and to keep app/, config/,
     storage/, database/ and the SQLite file out of the web root.
@@ -631,10 +632,20 @@ and every other value blanked. Fill in your database credentials.
 Leave `APP_DEBUG=false`. With it on, a stack trace containing your credentials
 is one error away from being public.
 
-## 4. Make two directories writable
+## 4. Make these directories writable
 
-    storage/    0755 (or 0775 if Python runs as a different user)
-    database/   only if you are using SQLite
+    storage/framework/sessions/   required — logins and CSRF depend on it
+    storage/framework/cache/      required if you use the cache
+    storage/logs/                 required, or errors go unrecorded
+    database/                     only if you are using SQLite
+
+    chmod -R 775 storage database
+
+`storage/framework/views/` is the exception: templates were compiled into this
+build, so it can stay read-only.
+
+If sessions cannot be written, every request gets a new CSRF token and every
+form POST fails with **419 Page Expired**. That is the symptom to look for.
 
 ## 5. Create the tables
 
@@ -704,6 +715,9 @@ directly and only application requests reach gunicorn.
 
     chown -R www-data:www-data storage database
     chmod -R 775 storage database
+
+`storage/framework/sessions` must be writable or logins and CSRF will not
+work — the symptom is every form POST returning 419.
 
 ## 7. HTTPS
 

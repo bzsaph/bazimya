@@ -378,3 +378,74 @@ class MakeCommandCommand(_Generator):
         self.line("")
         self.line("      commands = [{}]".format(name))
         self.line("")
+
+
+class MakeNotificationCommand(_Generator):
+    name = "make:notification"
+
+    description = "Create a notification in app/Notifications"
+
+    usage = "bazimya make:notification <Name> [--force]"
+
+    stub_name = "notification"
+
+    def target_path(self, name):
+        return self.application().app_path("Notifications", name + ".py")
+
+
+class MakeComponentCommand(Command):
+    name = "make:component"
+
+    description = "Create a view component and its template"
+
+    usage = "bazimya make:component <Name> [--view-only] [--force]"
+
+    def handle(self):
+        raw = self.argument(0)
+
+        if not raw:
+            self.error("  Please give the component a name.")
+            self.line("")
+            self.line("      " + self.usage)
+
+            return 1
+
+        from ...support.strings import kebab
+
+        name = self.studly(raw)
+        tag = kebab(name)
+        force = self.flag("force")
+        application = self.application()
+
+        written = []
+
+        # An anonymous component is just a template; --view-only skips the
+        # class, which is the right shape for markup with no logic.
+        if not self.flag("view-only"):
+            path = application.app_path("View", "Components", name + ".py")
+
+            if self.write_file(path, self.render_stub("component", {"name": name, "tag": tag}), force):
+                written.append(path)
+
+        template = application.views_path("components", tag + ".baz.html")
+
+        if self.write_file(template, self.render_stub("component.view", {"tag": tag}), force):
+            written.append(template)
+
+        if not written:
+            return 1
+
+        self.line("")
+        self.success("  Component <x-{}> created.".format(tag))
+        self.line("")
+
+        for path in written:
+            self.line("    " + self.relative(path))
+
+        self.line("")
+        self.comment("  Use it in a template:")
+        self.line("")
+        self.line("      <x-{}>content</x-{}>".format(tag, tag))
+        self.line("")
+
+        return 0

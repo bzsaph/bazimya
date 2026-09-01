@@ -1,0 +1,20 @@
+"""Queue configuration.
+
+There is no queue worker in Bazimya yet, so "sync" is the only driver: jobs
+run immediately, in the request that dispatched them. This file exists so the
+setting has somewhere to live when a real driver lands.
+
+For work that must happen out of band today, use cron:
+
+    * * * * * cd /path/to/app && python bazimya your:command
+"""
+
+from bazimya import env
+
+config = {
+    "default": env("QUEUE_CONNECTION", "sync"),
+
+    "connections": {
+        "sync": {"driver": "sync"},
+    },
+}

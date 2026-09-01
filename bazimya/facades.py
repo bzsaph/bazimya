@@ -93,7 +93,95 @@ class _ExtensionFacade(Facade):
     binding = "extensions"
 
 
+class _HashFacade(Facade):
+    binding = "hash"
+
+    def make(self, value):
+        return type(self).resolve().make(value)
+
+    def check(self, value, hashed):
+        return type(self).resolve().check(value, hashed)
+
+    def needs_rehash(self, hashed):
+        return type(self).resolve().needs_rehash(hashed)
+
+
+class _SessionFacade(Facade):
+    binding = "session"
+
+
+class _AuthFacade(Facade):
+    binding = "auth"
+
+    def user(self):
+        return type(self).resolve().user()
+
+    def check(self):
+        return type(self).resolve().check()
+
+    def guest(self):
+        return type(self).resolve().guest()
+
+    def id(self):
+        return type(self).resolve().id()
+
+    def attempt(self, credentials, remember=False):
+        return type(self).resolve().attempt(credentials, remember)
+
+    def login(self, user, remember=False):
+        return type(self).resolve().login(user, remember)
+
+    def logout(self):
+        return type(self).resolve().logout()
+
+    def set_session(self, session):
+        return type(self).resolve().set_session(session)
+
+
+class _CacheFacade(Facade):
+    binding = "cache"
+
+
+class _StorageFacade(Facade):
+    binding = "storage"
+
+    def disk(self, name=None):
+        return type(self).resolve().disk(name)
+
+
+class _MailFacade(Facade):
+    binding = "mail"
+
+    def to(self, *addresses):
+        return type(self).resolve().to(*addresses)
+
+
+class _EventFacade(Facade):
+    binding = "events"
+
+    def listen(self, event, listener=None):
+        return type(self).resolve().listen(event, listener)
+
+    def dispatch(self, event, payload=None):
+        return type(self).resolve().dispatch(event, payload)
+
+
+class _NotifyFacade(Facade):
+    binding = "notify"
+
+    def send(self, notifiables, notification):
+        return type(self).resolve().send(notifiables, notification)
+
+
 Route = _RouteFacade()
+Hash = _HashFacade()
+Session = _SessionFacade()
+Auth = _AuthFacade()
+Cache = _CacheFacade()
+Storage = _StorageFacade()
+Mail = _MailFacade()
+Event = _EventFacade()
+Notify = _NotifyFacade()
 DB = _DBFacade()
 View = _ViewFacade()
 Config = _ConfigFacade()
@@ -131,6 +219,32 @@ def redirect(location, status=302):
     from .http.response import Response
 
     return Response.redirect(location, status)
+
+
+def auth():
+    """The currently authenticated user, or None."""
+    return Auth.user()
+
+
+def csrf_token():
+    from .foundation.application import Application
+
+    session = Application.get_instance().make("session")
+
+    return session.token()
+
+
+def old(key=None, default=None):
+    """Input flashed by the previous request, for re-rendering a form."""
+    from .foundation.application import Application
+
+    return Application.get_instance().make("session").old(key, default)
+
+
+def back(request, fallback="/"):
+    from .http.response import Response
+
+    return Response.redirect(request.header("referer") or fallback)
 
 
 def base_path(*parts):

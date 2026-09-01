@@ -1,7 +1,7 @@
 """The HTTP kernel.
 
-Declares which middleware runs, in what order, and under what names — the
-same three lists Laravel's app/Http/Kernel.php has.
+Declares which middleware runs, in what order, and under what names — the same
+three lists Laravel's app/Http/Kernel.php has.
 """
 
 from bazimya.http.middleware import (
@@ -10,28 +10,44 @@ from bazimya.http.middleware import (
     SecurityHeaders,
     TrimStrings,
 )
+from bazimya.session.middleware import ShareErrorsFromSession, StartSession
+
+from app.Http.Middleware import (
+    Authenticate,
+    EnsureEmailIsVerified,
+    RedirectIfAuthenticated,
+    TrustProxies,
+    VerifyCsrfToken,
+)
 
 
 class Kernel:
     #: Runs on every request, in this order.
     middleware = [
+        TrustProxies,
         SecurityHeaders,
         TrimStrings,
         ConvertEmptyStringsToNull,
     ]
 
-    #: Applied by name. `web` is implicit for routes/web.py; `api` is applied
-    #: to routes/api.py automatically.
+    #: Applied by name. `web` is applied to routes/web.py automatically, and
+    #: `api` to routes/api.py.
     middleware_groups = {
         "web": [
-            # Add middleware that only browser-facing routes need.
+            StartSession,
+            ShareErrorsFromSession,
+            VerifyCsrfToken,
         ],
         "api": [
             HandleCors,
+            # No session here on purpose: a token-authenticated request has no
+            # session to resume, and issuing a cookie for one is just overhead.
         ],
     }
 
     #: Short names usable on any route: .middleware('auth')
     middleware_aliases = {
-        # 'auth': Authenticate,
+        "auth": Authenticate,
+        "guest": RedirectIfAuthenticated,
+        "verified": EnsureEmailIsVerified,
     }

@@ -185,6 +185,89 @@ class Application(Container):
 
         self.singleton("extensions", lambda c: self._make_extension_manager(c))
 
+        self.singleton("hash", lambda c: self._make_hasher(c))
+        self.singleton("session", lambda c: self._make_session(c))
+        self.singleton("auth", lambda c: self._make_auth(c))
+        self.singleton("cache", lambda c: self._make_cache(c))
+        self.singleton("storage", lambda c: self._make_filesystem(c))
+        self.singleton("mail", lambda c: self._make_mailer(c))
+        self.singleton("events", lambda c: self._make_events(c))
+        self.singleton("notify", lambda c: self._make_notifier(c))
+
+    def _make_hasher(self, container):
+        from ..hashing import Hasher
+
+        return Hasher(container.make("config").get("hashing", {}) or {})
+
+    def _make_session(self, container):
+        from ..session.store import ArraySessionHandler, FileSessionHandler, SessionStore
+
+        config = container.make("config")
+        driver = str(config.get("session.driver", "file"))
+        lifetime = int(config.get("session.lifetime", 120) or 120)
+
+        if driver == "array":
+            handler = ArraySessionHandler()
+        else:
+            handler = FileSessionHandler(
+                self.storage_path("framework", "sessions"), lifetime
+            )
+
+        return SessionStore(
+            handler, str(config.get("session.cookie", "bazimya_session")), lifetime
+        )
+
+    def _make_auth(self, container):
+        from ..auth.guard import SessionGuard
+
+        config = container.make("config")
+        guard = str(config.get("auth.defaults.guard", "web"))
+        provider = config.get("auth.guards.{}.provider".format(guard), "users")
+
+        return SessionGuard(
+            self, config.get("auth.providers.{}".format(provider), {}) or {}
+        )
+
+    def _make_cache(self, container):
+        from ..cache.repository import ArrayStore, CacheRepository, FileStore, NullStore
+
+        config = container.make("config")
+        driver = str(config.get("cache.default", "file"))
+
+        if driver == "array":
+            store = ArrayStore()
+        elif driver == "null":
+            store = NullStore()
+        else:
+            store = FileStore(
+                config.get("cache.stores.file.path")
+                or self.storage_path("framework", "cache")
+            )
+
+        return CacheRepository(store)
+
+    def _make_filesystem(self, container):
+        from ..filesystem.storage import FilesystemManager
+
+        return FilesystemManager(
+            container.make("config").get("filesystems", {}) or {}, self.base_path
+        )
+
+    def _make_mailer(self, container):
+        from ..mail.mailer import Mailer
+
+        return Mailer(container.make("config").get("mail", {}) or {}, self)
+
+    def _make_events(self, container):
+        from ..events.dispatcher import Dispatcher
+
+        return Dispatcher()
+
+    def _make_notifier(self, container):
+        from ..notifications.notification import NotificationSender
+
+        return NotificationSender(self)
+
     def _make_connection(self, container):
         config = container.make("config")
         default = config.get("database.default", "sqlite")
@@ -262,15 +345,34 @@ class Application(Container):
         for alias, middleware in (getattr(instance, "middleware_aliases", {}) or {}).items():
             router.alias_middleware(alias, middleware)
 
+    #: Route files with a meaning of their own; everything else in routes/ is
+    #: loaded into the web group.
+    RESERVED_ROUTE_FILES = ("web.py", "api.py", "console.py", "channels.py", "__init__.py")
+
     def _load_routes(self):
         router = self.make("router")
 
+        # web.py first, then any other route file (auth.py, admin.py …) in the
+        # same group. Dropping a file into routes/ is enough — there is no
+        # import line to remember, and nothing to keep in sync.
+        web_files = []
         web = self.routes_path("web.py")
 
         if os.path.isfile(web):
+            web_files.append(web)
+
+        if os.path.isdir(self.routes_path()):
+            for entry in sorted(os.listdir(self.routes_path())):
+                if entry.endswith(".py") and entry not in self.RESERVED_ROUTE_FILES:
+                    web_files.append(self.routes_path(entry))
+
+        if web_files:
             router.group(
                 {"middleware": ["web"] if router.has_middleware_group("web") else []},
-                lambda: self._load_route_file(web, "routes.web"),
+                lambda: [
+                    self._load_route_file(path, "routes." + os.path.basename(path)[:-3])
+                    for path in web_files
+                ],
             )
 
         # API routes get the /api prefix and the api middleware group, which
@@ -287,6 +389,15 @@ class Application(Container):
             )
 
     def _load_route_file(self, path, module_name):
+        """Execute a route file so its Route.get(...) calls register.
+
+        The module is dropped from sys.modules first: routes register by side
+        effect, and a cached module is not re-executed — so a second
+        Application in the same process (every test after the first) would
+        come up with no routes at all.
+        """
+        sys.modules.pop(module_name, None)
+
         spec = importlib.util.spec_from_file_location(module_name, path)
 
         if spec is None or spec.loader is None:
@@ -294,7 +405,12 @@ class Application(Container):
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
-        spec.loader.exec_module(module)
+
+        try:
+            spec.loader.exec_module(module)
+        finally:
+            # Leaving it registered would make the next load a no-op again.
+            sys.modules.pop(module_name, None)
 
     def load_console_routes(self):
         """Load routes/console.py.

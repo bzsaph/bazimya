@@ -27,11 +27,13 @@ class Kernel:
         )
         from .commands.make import (
             MakeCommandCommand,
+            MakeComponentCommand,
             MakeControllerCommand,
             MakeExtensionCommand,
             MakeMiddlewareCommand,
             MakeMigrationCommand,
             MakeModelCommand,
+            MakeNotificationCommand,
             MakeProviderCommand,
             MakeRequestCommand,
             MakeRuleCommand,
@@ -61,6 +63,8 @@ class Kernel:
             MakeRequestCommand,
             MakeRuleCommand,
             MakeSeederCommand,
+            MakeNotificationCommand,
+            MakeComponentCommand,
             MakeCommandCommand,
             MakeExtensionCommand,
             MigrateCommand,

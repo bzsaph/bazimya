@@ -84,13 +84,18 @@ python bazimya serve   # no Node at all
 | `app/Http/Controllers/PostController.php` | `app/Http/Controllers/PostController.py` |
 | `app/Http/Middleware/`, `app/Http/Requests/` | same |
 | `app/Models/`, `app/Providers/`, `app/Rules/` | same |
+| `app/Notifications/`, `app/View/Components/` | same |
+| `app/Services/`, `app/Support/` | same |
 | `app/Console/Kernel.php`, `app/Console/Commands/` | same, `.py` |
 | `app/Exceptions/Handler.php` | `app/Exceptions/Handler.py` |
-| `routes/web.php`, `routes/api.php`, `routes/console.php` | same, `.py` |
-| `config/app.php`, `config/database.php` | same, `.py` |
-| `database/migrations|seeders|factories` | same |
+| `routes/web.php`, `api.php`, `auth.php`, `console.php` | same, `.py` |
+| `config/` app, auth, cache, cors, database, filesystems, hashing, logging, mail, queue, services, session, view | same, `.py` |
+| `resources/views/components/` | same, `.baz.html` |
+| `tests/TestCase.php`, `tests/Feature`, `tests/Unit` | same, `.py` |
+| `database/factories/UserFactory.php` | same, `.py` |
+| `phpunit.xml` | `pytest.ini` |
 | `resources/views/home.blade.php` | `resources/views/home.baz.html` |
-| `bootstrap/app.php`, `public/`, `storage/`, `tests/` | same |
+| `bootstrap/app.php`, `public/`, `storage/` | same |
 | `Route::get(...)` | `Route.get(...)` |
 | `User::find($id)` | `User.find(id)` |
 | `$user->name` | `user.name` |
@@ -119,26 +124,28 @@ blog/
 │   ├── Exceptions/Handler.py
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   ├── Middleware/
+│   │   ├── Middleware/         Authenticate, VerifyCsrfToken, TrustProxies…
 │   │   ├── Requests/           form requests
 │   │   └── Kernel.py           middleware stacks, groups, aliases
 │   ├── Models/
-│   ├── Providers/
+│   ├── Notifications/
+│   ├── Providers/              App, Auth, Event, Route
 │   ├── Rules/                  custom validation rules
 │   ├── Services/
-│   └── Support/
+│   ├── Support/
+│   └── View/Components/        <x-alert> and friends
 ├── bootstrap/app.py            builds the application
-├── config/                     app, database, view, logging, extensions
+├── config/                     13 files, same names as Laravel's
 ├── database/
 │   ├── factories/  migrations/  seeders/
 ├── extensions/                 drop-in packages
 ├── public/                     document root; index.py is the CGI fallback
 ├── resources/
 │   ├── css/  js/
-│   └── views/                  *.baz.html
-├── routes/                     web.py, api.py, console.py
-├── storage/                    compiled views, logs
-├── tests/                      Feature/, Unit/
+│   └── views/                  *.baz.html, incl. components/ and auth/
+├── routes/                     web.py, api.py, auth.py, console.py
+├── storage/                    sessions, cache, compiled views, logs
+├── tests/                      TestCase.py, Feature/, Unit/
 ├── .env
 ├── bazimya                     the CLI (Laravel's artisan)
 ├── passenger_wsgi.py           cPanel entry point
@@ -242,6 +249,39 @@ Templates compile to Python and are cached in `storage/framework/views`.
 
 Writing `{{ $title }}` or `post->title` out of habit gives you a message
 saying so, with the Python spelling, rather than a syntax error.
+
+### Components
+
+`<x-alert>` works as it does in Blade — a template in
+`resources/views/components/`, and optionally a class in
+`app/View/Components/` that prepares its data.
+
+```html
+<x-alert type="error" :count="len(errors)">
+    Something went wrong.
+</x-alert>
+
+<x-input-error field="email" />
+```
+
+```python
+# app/View/Components/Alert.py
+class Alert(Component):
+    def __init__(self, type='info'):
+        self.type = type
+
+    def classes(self):
+        return 'alert alert-' + self.type
+```
+
+Attributes become constructor arguments; `:name="..."` evaluates a Python
+expression in the surrounding template's scope; the inner content arrives as
+`slot`. A template with no class works on its own.
+
+```bash
+bazimya make:component Badge            # class + template
+bazimya make:component Badge --view-only
+```
 
 ## Database
 
@@ -432,6 +472,8 @@ bazimya make:migration <name>         [--create=table] [--table=table]
 bazimya make:middleware <Name>
 bazimya make:request <Name>
 bazimya make:rule <Name>
+bazimya make:notification <Name>
+bazimya make:component <Name>         [--view-only]
 bazimya make:provider <Name>
 bazimya make:seeder <Name>
 bazimya make:command <Name>           [--command=my:name]
@@ -449,19 +491,85 @@ bazimya view:cache
 bazimya cache:clear
 ```
 
+## Authentication, sessions and CSRF
+
+`bazimya new` scaffolds a working login, registration and logout flow —
+`app/Http/Controllers/AuthController.py`, `routes/auth.py` and the two views.
+
+```python
+from bazimya import Auth, Hash
+
+if Auth.attempt({'email': email, 'password': password}):
+    return redirect('/dashboard')
+```
+
+Passwords are hashed with scrypt, falling back to pbkdf2 where the host's
+OpenSSL lacks it. Sessions are files under `storage/framework/sessions`, with
+the id signed by `APP_KEY` so a forged cookie is rejected before anything is
+read from disk. `VerifyCsrfToken` is in the `web` group, so `@csrf` in a form
+is checked, and a state-changing POST without it gets a 419.
+
+Protect routes with the aliases in `app/Http/Kernel.py`:
+
+```python
+Route.middleware('auth').group(lambda: [
+    Route.get('/dashboard', [DashboardController, 'index']),
+])
+```
+
+`storage/framework/sessions` must be **writable** on the server. If it is not,
+every request gets a fresh token and every form POST returns 419 — Bazimya
+writes a warning to stderr when that happens, and `bazimya doctor` checks it.
+
+## Testing
+
+```python
+from tests.TestCase import TestCase
+
+
+class PostTest(TestCase):
+    def test_a_post_can_be_created(self):
+        self.acting_as(user)
+
+        response = self.post('/posts', {'title': 'Hello'})
+
+        response.assert_redirect('/posts')
+        self.assert_database_has('posts', {'title': 'Hello'})
+```
+
+Each test gets a fresh in-memory database with the migrations applied, plus
+in-memory sessions, cache and mail — nothing touches your real data. Requests
+go straight through the WSGI app, so there is no server to start.
+
+```bash
+python -m unittest discover -s tests -p "*Test.py" -t .
+pytest                                   # pytest.ini is scaffolded
+```
+
+## Also included
+
+`Cache` (file/array), `Storage` (local disks, with path traversal refused),
+`Mail` (log/smtp/array via stdlib `smtplib`), `Notification` classes over mail,
+database and log channels, an `Event` dispatcher, and `<x-component>` view
+components with optional backing classes in `app/View/Components`.
+
 ## What is not here yet
 
 Being explicit, so nothing is discovered the hard way:
 
-- **No authentication.** No `auth` scaffolding, sessions, hashing or guards.
-- **No mail, queues, events, broadcasting or scheduling.** Use cron for
-  periodic work: `* * * * * cd /path/to/app && python bazimya your:command`.
+- **No queue worker.** `config/queue.py` exists but `sync` is the only driver:
+  jobs run in the request that dispatched them. Use cron for out-of-band work:
+  `* * * * * cd /path/to/app && python bazimya your:command`.
+- **No broadcasting.** No websockets, no `routes/channels.py`.
 - **No relationships on models.** `has_many` / `belongs_to` are not
   implemented; use the query builder for joins.
-- **No CSRF verification.** `@csrf` renders a field, but nothing checks it yet.
+- **No authorisation policies or gates.** `AuthServiceProvider` has a
+  `policies` dict, but nothing consumes it yet.
+- **No password reset or email verification.** The `verified` middleware
+  exists and checks an `email_verified_at` column; nothing sends the email.
+- **No rate limiting** on login or anywhere else.
 - **No asset pipeline.** `resources/css` and `resources/js` are yours to point
   a build at; `public/` is served as-is.
-- **No test harness.** `tests/` is scaffolded; use pytest.
 
 ## Licence
 

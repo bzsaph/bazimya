@@ -1,0 +1,19 @@
+"""Route configuration.
+
+routes/web.py and routes/api.py are loaded by the framework already; this is
+where you would add another route file or change the API prefix.
+"""
+
+from bazimya import ServiceProvider
+
+
+class RouteServiceProvider(ServiceProvider):
+    #: Where a successful login sends the user.
+    HOME = "/"
+
+    def boot(self):
+        # self.load_routes_from(
+        #     self.app.routes_path("admin.py"),
+        #     {"prefix": "admin", "middleware": ["web", "auth"]},
+        # )
+        pass

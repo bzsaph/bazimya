@@ -1,0 +1,28 @@
+"""Authentication configuration."""
+
+from bazimya import env
+
+config = {
+    "defaults": {
+        "guard": "web",
+    },
+
+    "guards": {
+        "web": {
+            "driver": "session",
+            "provider": "users",
+        },
+    },
+
+    "providers": {
+        "users": {
+            "driver": "model",
+            "model": "app.Models.User.User",
+            # The column checked against the submitted password.
+            "password_field": "password",
+        },
+    },
+
+    # Minutes a password reset link stays valid.
+    "password_timeout": env("AUTH_PASSWORD_TIMEOUT", 60),
+}

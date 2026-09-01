@@ -1,0 +1,17 @@
+"""Feature tests exercise the app through real HTTP requests."""
+
+from tests.TestCase import TestCase
+
+
+class ExampleTest(TestCase):
+    def test_the_home_page_loads(self):
+        self.get("/").assert_ok()
+
+    def test_the_about_endpoint_returns_json(self):
+        response = self.get_json("/about")
+
+        response.assert_ok()
+        response.assert_json({"framework": "Bazimya", "language": "Python"})
+
+    def test_an_unknown_page_is_a_404(self):
+        self.get("/no-such-page").assert_not_found()

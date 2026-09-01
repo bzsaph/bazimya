@@ -1,0 +1,7 @@
+"""Keep logged-in users off the login and register pages. Alias: `guest`."""
+
+from bazimya import RedirectIfAuthenticated as BaseRedirectIfAuthenticated
+
+
+class RedirectIfAuthenticated(BaseRedirectIfAuthenticated):
+    redirect_to = "/"

@@ -1,0 +1,31 @@
+"""Mail configuration.
+
+The "log" driver writes messages to storage/logs/mail.log instead of sending
+them. It is the default so that development never emails real people by
+accident — switch to "smtp" in production.
+"""
+
+from bazimya import env
+
+config = {
+    "default": env("MAIL_MAILER", "log"),
+
+    "mailers": {
+        "smtp": {
+            "host": env("MAIL_HOST", "127.0.0.1"),
+            "port": env("MAIL_PORT", 587),
+            "username": env("MAIL_USERNAME", None),
+            "password": env("MAIL_PASSWORD", None),
+            # "tls", "ssl" or "" for none.
+            "encryption": env("MAIL_ENCRYPTION", "tls"),
+            "timeout": 30,
+        },
+    },
+
+    "from": {
+        "address": env("MAIL_FROM_ADDRESS", "hello@example.com"),
+        "name": env("MAIL_FROM_NAME", env("APP_NAME", "Bazimya")),
+    },
+
+    "log_path": "storage/logs/mail.log",
+}

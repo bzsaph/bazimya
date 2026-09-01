@@ -1,0 +1,18 @@
+"""The <x-alert> component.
+
+    <x-alert type="error">Something went wrong.</x-alert>
+
+Attributes on the tag become constructor arguments. The template is
+resources/views/components/alert.baz.html.
+"""
+
+from bazimya import Component
+
+
+class Alert(Component):
+    def __init__(self, type="info", dismissible=False):
+        self.type = type
+        self.dismissible = dismissible
+
+    def classes(self):
+        return "alert alert-" + self.type

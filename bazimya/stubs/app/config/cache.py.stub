@@ -1,0 +1,20 @@
+"""Cache configuration."""
+
+from bazimya import env
+
+config = {
+    # "file", "array" or "null". The file store needs nothing installed, which
+    # is what makes it work on shared hosting.
+    "default": env("CACHE_DRIVER", "file"),
+
+    "stores": {
+        "file": {
+            "driver": "file",
+            "path": None,  # defaults to storage/framework/cache
+        },
+        "array": {"driver": "array"},
+        "null": {"driver": "null"},
+    },
+
+    "prefix": env("CACHE_PREFIX", "bazimya_cache"),
+}

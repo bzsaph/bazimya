@@ -27,3 +27,6 @@ Route.get("/ping", lambda request: {"pong": True})
 # And the seven RESTful routes at once:
 #
 #     Route.resource('posts', PostController)
+
+# Every other .py file in routes/ is loaded into this same group, right after
+# this one — routes/auth.py holds login, registration and logout.

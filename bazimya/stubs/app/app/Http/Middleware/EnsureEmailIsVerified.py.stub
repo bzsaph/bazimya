@@ -1,0 +1,21 @@
+"""Require a verified email address. Alias: `verified`.
+
+Assumes an `email_verified_at` column on the user model.
+"""
+
+from bazimya import Middleware, Response
+
+
+class EnsureEmailIsVerified(Middleware):
+    redirect_to = "/email/verify"
+
+    def handle(self, request, next):
+        user = request.user()
+
+        if user is None or user.attributes().get("email_verified_at"):
+            return next(request)
+
+        if request.wants_json():
+            return Response.json({"message": "Your email address is not verified."}, 403)
+
+        return Response.redirect(self.redirect_to)

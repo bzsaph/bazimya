@@ -1,0 +1,17 @@
+"""The {{name}} notification."""
+
+from bazimya import Notification
+
+
+class {{name}}(Notification):
+    def via(self, notifiable):
+        return ["mail"]
+
+    def to_mail(self, notifiable):
+        return {
+            "subject": "{{name}}",
+            "html": "<p>Hello.</p>",
+        }
+
+    def to_array(self, notifiable):
+        return {}

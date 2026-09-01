@@ -1,0 +1,31 @@
+"""Session configuration."""
+
+from bazimya import env
+
+config = {
+    # "file" stores sessions in storage/framework/sessions; "array" keeps them
+    # in memory and is what the test harness uses.
+    "driver": env("SESSION_DRIVER", "file"),
+
+    # Minutes of inactivity before a session expires.
+    "lifetime": env("SESSION_LIFETIME", 120),
+
+    "cookie": env("SESSION_COOKIE", "bazimya_session"),
+    "path": "/",
+    "domain": env("SESSION_DOMAIN", None),
+
+    # Set to True once the site is on HTTPS — it stops the cookie ever being
+    # sent over plain HTTP.
+    "secure": env("SESSION_SECURE_COOKIE", False),
+
+    # Keeps JavaScript from reading the cookie, which limits what an XSS bug
+    # can do with it.
+    "http_only": True,
+
+    # "Lax" lets normal top-level navigation carry the cookie while blocking
+    # it on cross-site POSTs.
+    "same_site": "Lax",
+
+    # Chance of sweeping expired session files: 2 in 100 requests.
+    "lottery": [2, 100],
+}

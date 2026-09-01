@@ -347,6 +347,57 @@ class View(AliasMixin):
 
         return self._render(template, data, depth=len(self._buffers))
 
+    def component(self, name, static, bound, slot, context=None):
+        """Render <x-name>. Called from compiled templates.
+
+        A class in app/View/Components prepares the data when one exists;
+        otherwise the template is rendered with the attributes as they came.
+        """
+        from .components import component_template, resolve_component_class
+
+        attributes = dict(static or {})
+        attributes.update(bound or {})
+
+        component_class = resolve_component_class(name)
+        template = component_template(name)
+        data = dict(context or {})
+
+        if component_class is not None:
+            try:
+                instance = component_class(**attributes)
+            except TypeError as error:
+                raise TemplateSyntaxError(
+                    "<x-{}> was given attributes {} that {} does not accept: {}".format(
+                        name, sorted(attributes), component_class.__name__, error
+                    ),
+                    name,
+                ) from None
+
+            data.update(instance.data())
+            template = instance.render() or template
+        else:
+            data.update(attributes)
+
+        data["attributes"] = attributes
+        data["slot"] = Markup(slot or "")
+
+        # Accept the underscored filename too, so components/input_error and
+        # components/input-error both resolve.
+        if not self.exists(template) and "-" in template:
+            underscored = template.replace("-", "_")
+
+            if self.exists(underscored):
+                template = underscored
+
+        if not self.exists(template):
+            raise ViewNotFound(
+                "Component <x-{}> needs a template at {} (looked for {}).".format(
+                    name, template.replace(".", "/") + EXTENSION, self.resolve(template)
+                )
+            )
+
+        return self._render(template, data, depth=len(self._buffers))
+
     def each(self, template, items, variable, context=None, empty_template=None):
         rendered = []
 

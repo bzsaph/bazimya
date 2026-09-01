@@ -1,0 +1,22 @@
+"""Password hashing configuration.
+
+scrypt is memory-hard, which is what makes a stolen password table expensive
+to attack. Where the host's OpenSSL lacks scrypt, Bazimya falls back to pbkdf2
+automatically rather than failing — `bazimya doctor` reports which is in use.
+"""
+
+from bazimya import env
+
+config = {
+    "driver": env("HASH_DRIVER", "scrypt"),
+
+    "scrypt": {
+        "n": env("HASH_SCRYPT_N", 32768),
+        "r": env("HASH_SCRYPT_R", 8),
+        "p": env("HASH_SCRYPT_P", 1),
+    },
+
+    "pbkdf2": {
+        "iterations": env("HASH_PBKDF2_ITERATIONS", 480000),
+    },
+}

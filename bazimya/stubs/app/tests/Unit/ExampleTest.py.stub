@@ -1,0 +1,13 @@
+"""Unit tests exercise one piece in isolation, with no HTTP and no database."""
+
+import unittest
+
+from bazimya.support.strings import plural, slug, snake, studly
+
+
+class ExampleTest(unittest.TestCase):
+    def test_string_helpers(self):
+        self.assertEqual(studly("user_profile"), "UserProfile")
+        self.assertEqual(snake("UserProfile"), "user_profile")
+        self.assertEqual(plural("category"), "categories")
+        self.assertEqual(slug("Hello There!"), "hello-there")

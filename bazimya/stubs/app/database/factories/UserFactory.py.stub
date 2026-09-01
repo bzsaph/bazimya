@@ -1,0 +1,56 @@
+"""The User factory — test and seed data.
+
+    UserFactory().count(10).create()
+    UserFactory().make({'name': 'Ada'})
+"""
+
+import random
+import string
+
+from app.Models import User
+
+
+class UserFactory:
+    model = User
+
+    def __init__(self):
+        self._count = 1
+
+    def count(self, count):
+        self._count = int(count)
+
+        return self
+
+    def definition(self):
+        suffix = "".join(random.choices(string.ascii_lowercase, k=8))
+
+        return {
+            "name": "User " + suffix,
+            "email": "{}@example.com".format(suffix),
+            "active": True,
+        }
+
+    def make(self, overrides=None):
+        """Build without saving."""
+        made = []
+
+        for _ in range(self._count):
+            attributes = self.definition()
+            attributes.update(overrides or {})
+            made.append(self.model(attributes))
+
+        return made[0] if self._count == 1 else made
+
+    def create(self, overrides=None):
+        """Build and save."""
+        created = []
+
+        for _ in range(self._count):
+            attributes = self.definition()
+            attributes.update(overrides or {})
+
+            instance = self.model(attributes)
+            instance.save()
+            created.append(instance)
+
+        return created[0] if self._count == 1 else created

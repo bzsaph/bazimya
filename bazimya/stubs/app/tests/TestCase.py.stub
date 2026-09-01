@@ -1,0 +1,21 @@
+"""The base test case every test in this application extends.
+
+    from tests.TestCase import TestCase
+
+    class ExampleTest(TestCase):
+        def test_home_page(self):
+            self.get('/').assert_ok().assert_see('Welcome')
+
+Each test gets a fresh in-memory database with the migrations applied, so
+tests never touch your development data.
+"""
+
+import os
+
+from bazimya.testing import TestCase as BaseTestCase
+
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+class TestCase(BaseTestCase):
+    base_path = BASE_PATH

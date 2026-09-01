@@ -420,5 +420,16 @@ class Request(AliasMixin):
     def get(self, key, default=None):
         return self._attributes.get(key, default)
 
+    def session(self):
+        """The session, once StartSession has run. None on routes without it."""
+        return self._attributes.get("session")
+
+    def user(self):
+        """The authenticated user, once Authenticate (or any guard) has run."""
+        return self._attributes.get("user")
+
+    def is_authenticated(self):
+        return self._attributes.get("user") is not None
+
     def __repr__(self):
         return "<Request {} {}>".format(self._method, self.path())

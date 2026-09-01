@@ -1,0 +1,9 @@
+[pytest]
+testpaths = tests
+python_files = *Test.py test_*.py
+python_classes = *Test
+python_functions = test_*
+
+# Tests import `app`, `routes` and `tests` as top-level packages, so the
+# project root has to be on sys.path.
+pythonpath = .

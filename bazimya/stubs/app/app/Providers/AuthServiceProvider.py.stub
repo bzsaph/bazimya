@@ -1,0 +1,11 @@
+"""Authorisation policies and gates."""
+
+from bazimya import ServiceProvider
+
+
+class AuthServiceProvider(ServiceProvider):
+    #: Model -> policy, once policies are supported.
+    policies = {}
+
+    def boot(self):
+        pass

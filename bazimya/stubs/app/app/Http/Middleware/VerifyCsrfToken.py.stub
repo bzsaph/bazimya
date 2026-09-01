@@ -1,0 +1,16 @@
+"""Reject state-changing requests without a valid CSRF token.
+
+Without this, another site can make a logged-in visitor's browser submit a
+form to yours. `@csrf` inside a form renders the matching field.
+"""
+
+from bazimya import VerifyCsrfToken as BaseVerifyCsrfToken
+
+
+class VerifyCsrfToken(BaseVerifyCsrfToken):
+    #: URIs skipped entirely — a webhook signed by the sender, for instance.
+    #: A trailing * is a wildcard. Only exclude what is authenticated some
+    #: other way.
+    exclude = [
+        # "webhooks/*",
+    ]

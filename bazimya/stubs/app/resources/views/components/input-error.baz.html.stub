@@ -1,0 +1,8 @@
+{{-- An anonymous component: no class, just this template. --}}
+@if (field in errors)
+    <ul class="input-error">
+        @foreach message in errors[field]
+            <li>{{ message }}</li>
+        @endforeach
+    </ul>
+@endif

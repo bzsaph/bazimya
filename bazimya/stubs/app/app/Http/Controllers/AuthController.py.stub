@@ -1,0 +1,75 @@
+"""Login, registration and logout.
+
+A working starting point, not a finished auth system: there is no email
+verification, password reset or rate limiting here. Add what the app needs.
+"""
+
+from bazimya import Auth, Hash, Response
+
+from app.Models import User
+
+from .Controller import Controller
+
+
+class AuthController(Controller):
+    #: Where a successful login lands.
+    home = "/"
+
+    # -- login ------------------------------------------------------------
+
+    def show_login(self, request):
+        return self.view("auth.login")
+
+    def login(self, request):
+        data = self.validate(request, {
+            "email": "required|email",
+            "password": "required",
+        })
+
+        session = request.session()
+        Auth.set_session(session)
+
+        if not Auth.attempt({"email": data["email"], "password": data["password"]}):
+            # The same message either way: saying "no such account" would let
+            # anyone test which addresses are registered.
+            session.flash_errors({"email": ["Those credentials do not match our records."]})
+            session.flash_input({"email": data["email"]})
+
+            return Response.redirect("/login")
+
+        # Where they were headed before being bounced to the login page.
+        intended = session.pull("_intended", self.home)
+
+        return Response.redirect(intended)
+
+    # -- registration -----------------------------------------------------
+
+    def show_register(self, request):
+        return self.view("auth.register")
+
+    def register(self, request):
+        data = self.validate(request, {
+            "name": "required|max:255",
+            "email": "required|email|unique:users,email",
+            "password": "required|min:8|confirmed",
+        })
+
+        user = User.create({"name": data["name"], "email": data["email"]})
+
+        # password is not in `fillable`, deliberately — it must never arrive
+        # by mass assignment, so it is set explicitly and hashed here.
+        user.force_fill({"password": Hash.make(data["password"])})
+        user.save()
+
+        Auth.set_session(request.session())
+        Auth.login(user)
+
+        return Response.redirect(self.home)
+
+    # -- logout -----------------------------------------------------------
+
+    def logout(self, request):
+        Auth.set_session(request.session())
+        Auth.logout()
+
+        return Response.redirect("/")

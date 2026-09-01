@@ -1,0 +1,10 @@
+"""Stop guests. Registered as the `auth` alias in app/Http/Kernel.py."""
+
+from bazimya import Authenticate as BaseAuthenticate
+
+
+class Authenticate(BaseAuthenticate):
+    #: Where unauthenticated browser requests are sent. Requests asking for
+    #: JSON get a 401 instead — redirecting an API client to an HTML form is
+    #: never useful.
+    redirect_to = "/login"

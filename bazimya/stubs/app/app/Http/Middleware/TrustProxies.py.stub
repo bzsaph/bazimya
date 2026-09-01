@@ -1,0 +1,25 @@
+"""Behind a proxy, trust its forwarded headers.
+
+nginx and most load balancers pass the real scheme and client IP in
+X-Forwarded-Proto and X-Forwarded-For. Without trusting them, every generated
+URL comes out as http:// and every client looks like it came from 127.0.0.1.
+
+Only enable this when a proxy really is in front of the app — otherwise a
+client can set those headers itself and lie about its address.
+"""
+
+from bazimya import Middleware
+
+
+class TrustProxies(Middleware):
+    #: True once nginx / a load balancer sits in front of this app.
+    enabled = False
+
+    def handle(self, request, next):
+        if not self.enabled:
+            # The headers stay untrusted, which is the safe default when the
+            # app is exposed directly.
+            request.environ.pop("HTTP_X_FORWARDED_PROTO", None)
+            request.environ.pop("HTTP_X_FORWARDED_FOR", None)
+
+        return next(request)

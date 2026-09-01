@@ -89,16 +89,35 @@ class DoctorCommand(Command):
     # -- project ----------------------------------------------------------
 
     def _check_project(self):
+        # Boot first: middleware groups, routes and extensions only exist once
+        # app/Http/Kernel.py has been read, and several checks look at them.
+        try:
+            self.app.boot()
+        except Exception as error:  # noqa: BLE001 — report it and keep going;
+            # the rest of the checks are often what explains the failure.
+            self.problems += 1
+            self._heading("Boot")
+            self.error("    the application failed to boot:")
+            self.line("    " + " " * self.LABEL_WIDTH + str(error).split("\n")[0])
+
         self._check_writable()
         self._check_config()
         self._check_database()
+        self._check_security()
         self._check_extensions()
         self._check_deployment()
 
     def _check_writable(self):
         self._heading("Writable directories")
 
-        for relative in ("storage", "storage/framework/views", "storage/logs", "database"):
+        for relative in (
+            "storage",
+            "storage/framework/views",
+            "storage/framework/sessions",
+            "storage/framework/cache",
+            "storage/logs",
+            "database",
+        ):
             path = self.app.path(relative)
 
             if not os.path.isdir(path):
@@ -160,6 +179,53 @@ class DoctorCommand(Command):
             self.error("    " + self._pad("location") + "the SQLite file is inside public/")
             self.line("    " + " " * self.LABEL_WIDTH + "Move it to database/ — it is downloadable where it is.")
 
+    def _check_security(self):
+        self._heading("Security")
+
+        from ...hashing import SCRYPT_AVAILABLE
+
+        hasher = self.app.make("hash")
+        configured = str(self.app.make("config").get("hashing.driver", "scrypt"))
+        resolved = hasher.driver()
+
+        self._note("password hash", resolved)
+
+        if configured == "scrypt" and not SCRYPT_AVAILABLE:
+            self.cautions += 1
+            self.warn("    " + self._pad("") + "scrypt is not in this OpenSSL build;")
+            self.line("    " + " " * self.LABEL_WIDTH + "using pbkdf2 instead, which is still sound.")
+
+        router = self.app.make("router")
+        groups = router.middleware_groups()
+        web = [getattr(m, "__name__", str(m)) for m in groups.get("web", [])]
+
+        has_csrf = any("VerifyCsrfToken" in name for name in web)
+        has_session = any("StartSession" in name for name in web)
+
+        self._assert(
+            "CSRF",
+            "on" if has_csrf else "OFF",
+            has_csrf,
+            "Add VerifyCsrfToken to the web group in app/Http/Kernel.py.",
+            fatal=False,
+        )
+        self._assert(
+            "sessions",
+            "on" if has_session else "off",
+            has_session,
+            "Add StartSession to the web group if this app has logins.",
+            fatal=False,
+        )
+
+        secure = bool(self.app.make("config").get("session.secure", False))
+
+        if self.app.is_production() and not secure:
+            self.cautions += 1
+            self.warn("    " + self._pad("cookie secure") + "off in production")
+            self.line("    " + " " * self.LABEL_WIDTH + "Set SESSION_SECURE_COOKIE=true once the site is on HTTPS.")
+        else:
+            self._note("cookie secure", "on" if secure else "off")
+
     def _check_extensions(self):
         if not os.path.isdir(self.app.extensions_path()):
             return
@@ -167,7 +233,6 @@ class DoctorCommand(Command):
         self._heading("Extensions")
 
         try:
-            self.app.boot()
             manager = self.app.make("extensions")
         except Exception as error:  # noqa: BLE001
             self.problems += 1
