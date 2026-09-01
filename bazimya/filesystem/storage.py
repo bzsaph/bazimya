@@ -1,6 +1,6 @@
 """File storage.
 
-Laravel's Storage facade over local disks. Two are configured by default:
+The Storage facade over local disks. Two are configured by default:
 `local` (storage/app, private) and `public` (storage/app/public, served).
 
     Storage.put('reports/june.csv', data)

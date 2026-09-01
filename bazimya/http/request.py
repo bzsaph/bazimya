@@ -1,8 +1,8 @@
 """The incoming HTTP request.
 
 Built from a WSGI environ, so the same object serves the development server,
-gunicorn on a VPS and Passenger on shared hosting. The API follows Laravel's
-Request, because that is the vocabulary this framework is written in.
+gunicorn on a VPS and Passenger on shared hosting. Reading a value goes
+through input(), whatever the verb or the content type.
 """
 
 import json as jsonlib
@@ -85,8 +85,8 @@ class Request(AliasMixin):
 
         raw, body, files = cls._read_body(environ, headers, method)
 
-        # Let an HTML form spoof PUT/PATCH/DELETE, exactly as @method does in
-        # Laravel — browsers still only send GET and POST.
+        # Let an HTML form spoof PUT/PATCH/DELETE through @method — browsers
+        # still only send GET and POST.
         if method == "POST" and isinstance(body, dict):
             spoofed = str(body.get("_method", "")).upper()
 
@@ -287,7 +287,7 @@ class Request(AliasMixin):
     # -- input ------------------------------------------------------------
 
     def input(self, key, default=None):
-        """Body first, then query string — Laravel's precedence."""
+        """Body first, then query string."""
         if key in self._body:
             return self._body[key]
 

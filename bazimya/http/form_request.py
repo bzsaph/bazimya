@@ -1,7 +1,7 @@
 """Form requests.
 
-Laravel's app/Http/Requests: validation rules and authorisation moved out of
-the controller and into a class of their own.
+Validation rules and authorisation, moved out of the controller and into a
+class of their own under app/Http/Requests.
 
     class StorePostRequest(FormRequest):
         def authorize(self, request):

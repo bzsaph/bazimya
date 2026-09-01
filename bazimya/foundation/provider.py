@@ -1,6 +1,6 @@
 """Service providers.
 
-The same two-phase contract as Laravel's: `register` only puts things in the
+A two-phase contract: `register` only puts things in the
 container, `boot` may use them. Keeping registration free of resolution is
 what allows any provider to depend on any other.
 

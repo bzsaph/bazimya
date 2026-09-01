@@ -173,8 +173,8 @@ class ShareErrorsFromSession(Middleware):
             values = session.old()
 
             # `errors` is a dict so a template can write `field in errors` and
-            # `errors[field]`; `old` is callable because Laravel's helper is —
-            # `old('email', '')` is what a form field looks like.
+            # `errors[field]`; `old` is callable, because `old('email', '')`
+            # is what a form field looks like.
             view.share("errors", errors)
             view.share("old", _OldInput(values))
             view.set_csrf_token(session.token())
@@ -185,8 +185,8 @@ class ShareErrorsFromSession(Middleware):
 class _OldInput:
     """Flashed input, usable as `old('email', '')` or `old['email']`.
 
-    Laravel's `old()` is a function, and templates ported across call it that
-    way; the mapping interface is there so `'email' in old` also works.
+    `old()` reads as a function in a template; the mapping interface is
+    there so `'email' in old` also works.
     """
 
     def __init__(self, values=None):

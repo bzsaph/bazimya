@@ -1,12 +1,14 @@
 # Bazimya
 
-**Laravel's structure. Python's language.**
+**A Python web framework with no dependencies.**
 
-Same folders, same file names, same vocabulary — `app/Http/Controllers`,
-`routes/web`, `config/app`, `app/Console/Kernel`, `database/migrations`. The
-only differences are that the files end in `.py` instead of `.php`, templates
-are `.baz.html` instead of `.blade.php`, and the CLI is called `bazimya`
-instead of `artisan`.
+Controllers, models, migrations, templates, authentication and a CLI, in a
+folder structure that stays the same in every project — `app/Http/Controllers`,
+`routes/web`, `config/app`, `app/Console/Kernel`, `database/migrations`.
+Templates end in `.baz.html`; the CLI is called `bazimya`.
+
+It runs on the Python standard library alone, which is what lets it deploy to
+shared hosting where you cannot run `pip` or open a shell.
 
 ```python
 # routes/web.py
@@ -76,42 +78,15 @@ npm run serve          # the script in package.json
 python bazimya serve   # no Node at all
 ```
 
-## Coming from Laravel
+## Method names work either way
 
-| Laravel | Bazimya |
-| --- | --- |
-| `artisan` | `bazimya` |
-| `app/Http/Controllers/PostController.php` | `app/Http/Controllers/PostController.py` |
-| `app/Http/Middleware/`, `app/Http/Requests/` | same |
-| `app/Models/`, `app/Providers/`, `app/Rules/` | same |
-| `app/Notifications/`, `app/View/Components/` | same |
-| `app/Services/`, `app/Support/` | same |
-| `app/Console/Kernel.php`, `app/Console/Commands/` | same, `.py` |
-| `app/Exceptions/Handler.php` | `app/Exceptions/Handler.py` |
-| `routes/web.php`, `api.php`, `auth.php`, `console.php` | same, `.py` |
-| `config/` app, auth, cache, cors, database, filesystems, hashing, logging, mail, queue, services, session, view | same, `.py` |
-| `resources/views/components/` | same, `.baz.html` |
-| `tests/TestCase.php`, `tests/Feature`, `tests/Unit` | same, `.py` |
-| `database/factories/UserFactory.php` | same, `.py` |
-| `phpunit.xml` | `pytest.ini` |
-| `resources/views/home.blade.php` | `resources/views/home.baz.html` |
-| `bootstrap/app.php`, `public/`, `storage/` | same |
-| `Route::get(...)` | `Route.get(...)` |
-| `User::find($id)` | `User.find(id)` |
-| `$user->name` | `user.name` |
-| `composer install` | nothing to install |
-
-**Method names work either way.** Bazimya's own methods are snake_case, but
-every Laravel camelCase spelling resolves to the same call, so ported code
-runs unchanged:
+Bazimya's own methods are snake_case, but the camelCase spelling of each one
+resolves to the same call, so either style reads correctly:
 
 ```python
-User.where('active', 1).orderBy('name').firstOrFail()    # Laravel's spelling
-User.where('active', 1).order_by('name').first_or_fail() # identical
+User.where('active', 1).orderBy('name').firstOrFail()
+User.where('active', 1).order_by('name').first_or_fail()  # identical
 ```
-
-Python has no `::`, so `Route::get` becomes `Route.get` — one character. That
-is the largest syntactic difference in the framework.
 
 ## Layout
 
@@ -135,7 +110,7 @@ blog/
 │   ├── Support/
 │   └── View/Components/        <x-alert> and friends
 ├── bootstrap/app.py            builds the application
-├── config/                     13 files, same names as Laravel's
+├── config/                     13 files, one per subsystem
 ├── database/
 │   ├── factories/  migrations/  seeders/
 ├── extensions/                 drop-in packages
@@ -147,7 +122,7 @@ blog/
 ├── storage/                    sessions, cache, compiled views, logs
 ├── tests/                      TestCase.py, Feature/, Unit/
 ├── .env
-├── bazimya                     the CLI (Laravel's artisan)
+├── bazimya                     the CLI
 ├── passenger_wsgi.py           cPanel entry point
 └── wsgi.py                     gunicorn entry point
 ```
@@ -185,8 +160,8 @@ def show(self, request, id):
     return {'id': id}
 ```
 
-`routes/api.py` is loaded under `/api` with the `api` middleware group, exactly
-as Laravel's `RouteServiceProvider` does it.
+`routes/api.py` is loaded under `/api` with the `api` middleware group. Which
+files load where is set in `app/Providers/RouteServiceProvider.py`.
 
 ### Middleware
 
@@ -207,8 +182,8 @@ Register it in `app/Http/Kernel.py` under `middleware`, `middleware_groups` or
 
 ## Views
 
-Templates live in `resources/views` and end in `.baz.html`. The syntax is
-Blade's; the expressions are Python.
+Templates live in `resources/views` and end in `.baz.html`. Directives start
+with `@`; every expression inside them is Python.
 
 ```html
 @extends('layouts.app')
@@ -247,14 +222,13 @@ Blade's; the expressions are Python.
 
 Templates compile to Python and are cached in `storage/framework/views`.
 
-Writing `{{ $title }}` or `post->title` out of habit gives you a message
-saying so, with the Python spelling, rather than a syntax error.
+Writing `{{ $title }}` or `post->title` gives you a message naming the Python
+spelling, rather than a syntax error.
 
 ### Components
 
-`<x-alert>` works as it does in Blade — a template in
-`resources/views/components/`, and optionally a class in
-`app/View/Components/` that prepares its data.
+`<x-alert>` renders a template from `resources/views/components/`, with an
+optional class in `app/View/Components/` that prepares its data.
 
 ```html
 <x-alert type="error" :count="len(errors)">

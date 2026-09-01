@@ -1,6 +1,6 @@
 """The cache.
 
-Laravel's Cache facade, with a file store under storage/framework/cache. No
+The Cache facade, with a file store under storage/framework/cache. No
 Redis, no Memcached — the file store needs nothing installed, which is the
 whole point on shared hosting.
 

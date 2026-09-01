@@ -2,7 +2,7 @@
 
 Handlers may return a Response, or a plain str/dict/list/None — `make` turns
 any of those into one, so a controller that just returns a dict gets JSON
-without saying so, exactly as it would in Laravel.
+without saying so.
 """
 
 import json as jsonlib

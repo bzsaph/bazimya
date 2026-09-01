@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The project's own CLI — Bazimya's artisan.
+"""The project's own CLI.
 
     python bazimya serve
     python bazimya make:controller PostController --resource

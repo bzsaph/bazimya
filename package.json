@@ -1,7 +1,7 @@
 {
   "name": "bazimya",
   "version": "0.2.1",
-  "description": "A Python web framework with Laravel's structure. Deploys to a VPS or to shared hosting with no shell.",
+  "description": "A Python web framework with no dependencies. Deploys to a VPS or to shared hosting with no shell.",
   "homepage": "https://github.com/bzsaph/bazimya#readme",
   "repository": {
     "type": "git",
@@ -15,7 +15,6 @@
     "framework",
     "python",
     "mvc",
-    "laravel",
     "wsgi",
     "shared-hosting",
     "cpanel",

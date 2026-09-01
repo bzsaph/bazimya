@@ -1,7 +1,7 @@
 """The session store.
 
-Laravel's Session facade, with the same vocabulary — get/put/forget/flash, and
-a token for CSRF. Data lives in storage/framework/sessions as one file per
+get/put/forget/flash, and a token for CSRF. Data lives in
+storage/framework/sessions as one file per
 session, which needs no database and works on shared hosting.
 
 The session id travels in a cookie that is signed with APP_KEY, so a client
@@ -307,7 +307,7 @@ class FileSessionHandler:
 
     def gc(self):
         """Delete expired session files. Called at random on a small fraction
-        of requests, which is how Laravel does it too."""
+        of requests, so no cron job is needed."""
         removed = 0
         deadline = time.time() - self.lifetime * 60
 

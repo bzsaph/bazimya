@@ -1,4 +1,4 @@
-"""Custom validation rules — Laravel's app/Rules.
+"""Custom validation rules, one class each, living in app/Rules.
 
     class Uppercase(Rule):
         def passes(self, field, value):

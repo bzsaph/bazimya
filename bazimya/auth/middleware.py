@@ -1,4 +1,4 @@
-"""Authentication middleware — Laravel's Authenticate and RedirectIfAuthenticated."""
+"""Authentication middleware — Authenticate and RedirectIfAuthenticated."""
 
 from ..http.exceptions import Unauthorized
 from ..http.middleware import Middleware

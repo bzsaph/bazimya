@@ -1,6 +1,6 @@
 """Reading .env.
 
-Values are coerced the way Laravel coerces them, because a config file that
+Values are coerced on the way out, because a config file that
 says `debug = Env.get("APP_DEBUG", False)` should get a real boolean, not the
 string "false" — which is truthy, and is the single most common way a debug
 flag ends up on in production.
@@ -133,5 +133,5 @@ class Env:
 
 
 def env(key, default=None):
-    """Module-level helper, so config files read like Laravel's."""
+    """Module-level helper, so config files read as plain assignments."""
     return Env.get(key, default)

@@ -1,7 +1,6 @@
 """Compiles a .baz.html template into Python source.
 
-The syntax is Blade's, so a template reads the same as the Laravel one it was
-ported from:
+Directives start with @, expressions inside them are Python:
 
     @extends('layouts.app')
 
@@ -575,7 +574,7 @@ class Compiler:
         self._emit("__view.stop_section()")
 
     def _directive_show(self, arguments, line):
-        """@show ends a section and immediately prints it, as Blade does."""
+        """@show ends a section and immediately prints it."""
         self._close("endsection", line, "section")
         self._emit("__append(__view.stop_section(render=True))")
 
@@ -780,7 +779,7 @@ class Compiler:
 
 
 def _loop_parts(arguments, directive, template, line):
-    """Accept both `item in items` and Blade's `items as item`."""
+    """Accept both `item in items` and `items as item`."""
     if not arguments:
         raise TemplateSyntaxError(
             "@{} needs something to loop over".format(directive), template, line

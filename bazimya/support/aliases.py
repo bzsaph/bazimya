@@ -1,10 +1,10 @@
-"""Laravel's method names, on top of Python's.
+"""camelCase spellings, on top of the snake_case ones.
 
 Bazimya's own methods are snake_case, because that is what Python code looks
-like. But the point of this framework is that Laravel code should port across
-almost unchanged, and Laravel's methods are camelCase:
+like. Both spellings resolve to the same call, so neither habit is wrong and
+code copied from elsewhere keeps working:
 
-    User.where('active', 1).orderBy('name').firstOrFail()     # Laravel's spelling
+    User.where('active', 1).orderBy('name').firstOrFail()     # camelCase
     User.where('active', 1).order_by('name').first_or_fail()  # the same call
 
 So every camelCase name falls through to its snake_case twin. Nothing is
@@ -35,7 +35,7 @@ def looks_camel(name):
 
 
 class AliasMixin:
-    """Give an instance Laravel's camelCase spellings."""
+    """Give an instance the camelCase spellings of its methods."""
 
     def __getattr__(self, name):
         if looks_camel(name):
@@ -53,7 +53,7 @@ class AliasMixin:
 
 
 class AliasMeta(type):
-    """Give a *class* Laravel's camelCase spellings.
+    """Give a *class* the camelCase spellings of its methods.
 
     Needed for the static-style calls that are the whole reason this exists:
     `User.orderBy(...)` is a lookup on the class, not on an instance.

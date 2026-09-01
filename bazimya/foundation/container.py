@@ -1,6 +1,6 @@
 """The service container.
 
-Same three verbs as Laravel's: bind, singleton, instance — plus make to get
+Three verbs: bind, singleton, instance — plus make to get
 something back out. Keys are strings ("router", "db") or classes.
 """
 

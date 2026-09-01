@@ -1,6 +1,6 @@
 """Mail.
 
-Laravel's Mail facade on Python's smtplib — stdlib, so nothing to install.
+The Mail facade on Python's smtplib — stdlib, so nothing to install.
 
     Mail.to('you@example.com').send(
         subject='Welcome',

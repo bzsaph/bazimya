@@ -1,8 +1,8 @@
 """Extensions — self-contained packages that plug into an application.
 
 An extension is a Python package under extensions/ that declares its routes,
-commands, middleware, views and migrations. It is Laravel's service provider,
-with the pieces a package usually ships bundled in:
+commands, middleware, views and migrations. It is a service provider with the
+pieces a package usually ships bundled in:
 
     # extensions/Blog/__init__.py
     from bazimya import Extension, Route, Response

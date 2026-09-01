@@ -1,6 +1,6 @@
 """View components.
 
-Laravel's `<x-alert type="error">…</x-alert>`, in two halves:
+A component tag, `<x-alert type="error">…</x-alert>`, has two halves:
 
   - a template at resources/views/components/alert.baz.html
   - optionally a class at app/View/Components/Alert.py, which prepares data
@@ -89,8 +89,8 @@ def resolve_component_class(name):
 def component_template(name):
     """`alert` -> `components.alert`; `forms.input` -> `components.forms.input`.
 
-    Hyphens are kept: <x-input-error> looks for components/input-error, the
-    same filename Laravel uses. Only the backing class name is studly-cased.
+    Hyphens are kept: <x-input-error> looks for components/input-error.
+    Only the backing class name is studly-cased.
     """
     return "components." + name
 
@@ -99,7 +99,7 @@ def parse_attributes(source):
     """Turn a tag's attributes into (static, bound) dicts.
 
     `type="error"` is a literal; `:count="len(items)"` is a Python expression
-    evaluated in the template's scope — the same split Blade makes.
+    evaluated in the template's scope.
     """
     static = {}
     bound = {}

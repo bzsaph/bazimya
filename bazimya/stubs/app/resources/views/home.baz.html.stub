@@ -10,14 +10,13 @@
             </p>
 
             <h1 class="display-5 fw-bold lh-sm mb-3">
-                Laravel's structure.<br>Python's language.
+                A framework that runs<br>anywhere Python does.
             </h1>
 
             <p class="lead text-body-secondary mb-4">
-                This page is a <code>.baz.html</code> template. The syntax is Blade's,
-                the expressions are Python &mdash; <code>{{ name }}</code>, not
-                <code>@{{ $name }}</code>. Edit it at
-                <code>resources/views/home.baz.html</code>.
+                This page is a <code>.baz.html</code> template. Directives start
+                with <code>&#64;</code>, and every expression inside them is Python.
+                Edit it at <code>resources/views/home.baz.html</code>.
             </p>
 
             <div class="d-flex flex-wrap gap-2">
@@ -107,5 +106,5 @@ Route.resource('posts', PostController)</code></pre>
 @endsection
 
 @section('footer')
-    Bazimya &mdash; Laravel's structure, Python's language.
+    Bazimya &mdash; a Python web framework with no dependencies.
 @endsection

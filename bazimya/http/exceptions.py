@@ -1,7 +1,7 @@
 """HTTP exceptions.
 
 Raising one of these from anywhere in a request produces the right status code
-instead of a 500 — the equivalent of Laravel's abort().
+instead of a 500. `abort()` raises the right one for a status code.
 """
 
 
@@ -40,7 +40,7 @@ class MethodNotAllowed(HttpException):
 
 
 class PageExpired(HttpException):
-    """CSRF token missing or wrong — Laravel's 419."""
+    """CSRF token missing or wrong."""
 
     status = 419
 

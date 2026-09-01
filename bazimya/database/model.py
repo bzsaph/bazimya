@@ -1,6 +1,6 @@
 """Models.
 
-Eloquent's shape, in Python:
+An active-record model:
 
     class User(Model):
         table = 'users'

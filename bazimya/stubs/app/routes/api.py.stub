@@ -1,8 +1,8 @@
 """API routes.
 
 Loaded under the /api prefix with the `api` middleware group, the same way
-Laravel's RouteServiceProvider does it. A route defined here as '/status' is
-served at /api/status.
+app/Providers/RouteServiceProvider.py sets that up. A route defined here as
+'/status' is served at /api/status.
 """
 
 from bazimya import Route

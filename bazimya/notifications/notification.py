@@ -1,6 +1,6 @@
 """Notifications.
 
-Laravel's notification classes, with the channels that can be built on the
+Notification classes, with the channels that can be built on the
 standard library:
 
     class InvoicePaid(Notification):
@@ -73,8 +73,8 @@ class NotificationSender:
         return results
 
     def send_now(self, notifiables, notification):
-        # There is no queue, so this is `send`. Kept so that code written
-        # against Laravel's API does not have to change.
+        # There is no queue, so this is `send`. Kept as a separate name so
+        # that call sites do not have to change when one arrives.
         return self.send(notifiables, notification)
 
     def _send_one(self, notifiable, notification, channel):

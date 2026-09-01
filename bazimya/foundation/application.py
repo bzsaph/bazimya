@@ -1,6 +1,6 @@
 """The application: paths, container bindings and the request lifecycle.
 
-Boot order follows Laravel's, because the ordering is what makes the
+The boot order is fixed, because the ordering is what makes the
 extension points useful:
 
     1. .env, then config/
@@ -376,7 +376,7 @@ class Application(Container):
             )
 
         # API routes get the /api prefix and the api middleware group, which
-        # is what RouteServiceProvider does in Laravel.
+        # is what RouteServiceProvider does.
         api = self.routes_path("api.py")
 
         if os.path.isfile(api):

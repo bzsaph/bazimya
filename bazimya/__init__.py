@@ -1,11 +1,11 @@
-"""Bazimya — a Python web framework with Laravel's structure.
+"""Bazimya — a Python web framework with no dependencies.
 
 Everything an application needs is importable from here:
 
     from bazimya import Route, Controller, Model, Schema, Migration, Response
 
-The layout, the vocabulary and the lifecycle follow Laravel 10; the language
-is Python, and templates are .baz.html.
+The layout, the vocabulary and the boot order are fixed, so every
+application is arranged the same way. Templates are .baz.html.
 """
 
 from .database.migration import Migration, Migrator

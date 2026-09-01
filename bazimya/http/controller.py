@@ -1,7 +1,6 @@
 """The base controller.
 
-Its helpers are the ones Laravel controllers reach for, so that a method reads
-the same in either language:
+Its helpers cover what a controller method usually needs to return:
 
     class PostController(Controller):
         def index(self, request):

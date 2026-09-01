@@ -1,6 +1,6 @@
 """Middleware.
 
-The shape is Laravel's: `handle(request, next)` either returns a response of
+The shape is `handle(request, next)`: either return a response of
 its own, or calls `next(request)` and (optionally) works on what comes back.
 
     class EnsureToken(Middleware):
@@ -22,7 +22,7 @@ class Middleware:
 
 
 class TrimStrings(Middleware):
-    """Trim whitespace off incoming strings, as Laravel does by default."""
+    """Trim whitespace off incoming strings. Enabled by default."""
 
     skip = ("password", "password_confirmation")
 

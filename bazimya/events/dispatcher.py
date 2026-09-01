@@ -1,6 +1,6 @@
 """Events.
 
-Laravel's Event facade. Listeners are registered in app/Providers/
+The Event facade. Listeners are registered in app/Providers/
 EventServiceProvider.py and fired from anywhere:
 
     Event.listen(UserRegistered, SendWelcomeEmail)
@@ -114,8 +114,8 @@ class Dispatcher:
 
     @staticmethod
     def _call(listener, event, payload):
-        # A class listener is instantiated and its handle() called, matching
-        # Laravel; a plain function is called directly.
+        # A class listener is instantiated and its handle() called; a plain
+        # function is called directly.
         if inspect.isclass(listener):
             instance = listener()
             handler = getattr(instance, "handle", instance)

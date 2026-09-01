@@ -189,7 +189,7 @@ App = _AppFacade()
 Extensions = _ExtensionFacade()
 
 
-# -- helper functions, the equivalent of Laravel's global helpers -----------
+# -- global helper functions ------------------------------------------------
 
 
 def app(key=None):

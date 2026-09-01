@@ -1,6 +1,6 @@
 """The test harness.
 
-Laravel's TestCase, with the same request helpers:
+A base test case, with helpers for driving the app through WSGI:
 
     class ExampleTest(TestCase):
         def test_home_page(self):

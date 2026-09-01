@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bazimya"
 version = "0.2.1"
-description = "A Python web framework with Laravel's structure."
+description = "A Python web framework with no dependencies, deployable to shared hosting."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
 authors = [{ name = "James Mark", email = "ericnyirimana31@gmail.com" }]
 maintainers = [{ name = "James Mark", email = "ericnyirimana31@gmail.com" }]
-keywords = ["framework", "web", "mvc", "laravel", "wsgi"]
+keywords = ["framework", "web", "mvc", "wsgi", "shared-hosting", "cpanel"]
 
 classifiers = [
     "Development Status :: 3 - Alpha",

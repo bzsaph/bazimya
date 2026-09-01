@@ -4,8 +4,8 @@
     def inspire(args, options):
         return 'Simplicity is the ultimate sophistication.'
 
-Laravel spells this `Artisan::command`. Anything longer than a few lines
-belongs in a class under app/Console/Commands instead.
+Anything longer than a few lines belongs in a class under
+app/Console/Commands instead.
 """
 
 

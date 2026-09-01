@@ -1,7 +1,7 @@
 """Validation.
 
-Laravel's pipe-delimited rule strings, because they are compact and the ones
-people already know:
+Rules are pipe-delimited strings, because they stay compact even when a
+field has several:
 
     data = Validator(request.all(), {
         'title': 'required|max:255',
@@ -315,8 +315,8 @@ class Validator:
     @staticmethod
     def _size(value):
         """Numbers compare by value; everything else by length — the same
-        rule Laravel uses, and the reason min:18 works on an age and min:8 on
-        a password."""
+        rule, and the reason min:18 works on an age and min:8 on a
+        password."""
         if isinstance(value, bool):
             return 1
 

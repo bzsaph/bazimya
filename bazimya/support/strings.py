@@ -42,7 +42,7 @@ def slug(value, separator="-"):
 
 def plural(value):
     """Good enough for table names; override with `table` on the model when
-    the guess is wrong, which is what Laravel expects you to do too."""
+    the guess is wrong."""
     value = str(value)
 
     if not value:

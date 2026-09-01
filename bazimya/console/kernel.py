@@ -334,7 +334,7 @@ class Kernel:
 
         out.line("")
         out.line("  " + out.bold("Bazimya") + " " + VERSION)
-        out.line("  A Python web framework with Laravel's structure.")
+        out.line("  A Python web framework with no dependencies.")
         out.line("")
         out.line("  " + out.bold("USAGE"))
         out.line("      bazimya <command> [arguments] [--options]")

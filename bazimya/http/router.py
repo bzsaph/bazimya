@@ -1,6 +1,6 @@
 """The router: registration, matching, the middleware pipeline, dispatch.
 
-Written to read like routes/web.php does in Laravel:
+A route file reads as a list of statements, one per route:
 
     Route.get('/', [HomeController, 'index']).name('home')
     Route.post('/posts', [PostController, 'store'])
@@ -66,7 +66,7 @@ class Router(AliasMixin):
         return self.add_route(methods, uri, action)
 
     def view(self, uri, template, data=None):
-        """A route that only renders a template — Laravel's Route::view."""
+        """A route that only renders a template, with no controller."""
         payload = dict(data or {})
 
         def handler(request):
@@ -132,7 +132,7 @@ class Router(AliasMixin):
 
         return self
 
-    # Laravel's fluent group builders: Route.middleware('auth').group(...)
+    # Fluent group builders: Route.middleware('auth').group(...)
 
     def middleware(self, *middleware):
         return _GroupBuilder(self, {"middleware": _flatten(middleware)})
@@ -146,7 +146,7 @@ class Router(AliasMixin):
     # -- resource routes --------------------------------------------------
 
     def resource(self, uri, controller, only=None, exclude=None, parameter=None):
-        """The seven RESTful routes, with Laravel's names and verbs."""
+        """The seven RESTful routes: index, create, store, show, edit, update, destroy."""
         from ..support.strings import singular, snake
 
         base = str(uri).strip("/")
@@ -231,7 +231,7 @@ class Router(AliasMixin):
         return None
 
     def url(self, name, **parameters):
-        """Generate a URL from a route name, like Laravel's route() helper."""
+        """Generate a URL from a route name and its parameters."""
         route = self.named(name)
 
         if route is None:

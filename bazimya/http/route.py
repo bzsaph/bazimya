@@ -1,6 +1,6 @@
 """A single registered route.
 
-URIs use Laravel's placeholder syntax:
+URIs use braced placeholders:
 
     /posts/{id}
     /posts/{slug?}          optional — also matches /posts

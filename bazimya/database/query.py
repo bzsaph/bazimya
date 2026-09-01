@@ -1,6 +1,6 @@
 """The query builder.
 
-Chained the way Laravel's is, so a query reads the same in both:
+Chained, so a query reads in the order it runs:
 
     DB.table('users').where('active', 1).order_by('name').limit(10).get()
     DB.table('users').where('age', '>=', 18).count()

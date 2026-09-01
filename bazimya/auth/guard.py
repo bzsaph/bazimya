@@ -1,6 +1,6 @@
 """Authentication.
 
-Laravel's Auth facade over a session guard:
+The Auth facade over a session guard:
 
     if Auth.attempt({'email': email, 'password': password}):
         request.session().regenerate()

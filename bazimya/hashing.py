@@ -1,7 +1,7 @@
 """Password hashing.
 
-Laravel's Hash facade, on Python's hashlib. Two algorithms, both in the
-standard library so nothing needs installing:
+Password hashing on Python's hashlib. Two algorithms, both in the standard
+library so nothing needs installing:
 
     Hash.make('secret')                  -> 'scrypt$32768$8$1$<salt>$<hash>'
     Hash.check('secret', hashed)         -> True
