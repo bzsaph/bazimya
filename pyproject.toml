@@ -9,8 +9,8 @@ description = "A Python web framework with no dependencies, deployable to shared
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
-authors = [{ name = "James Mark", email = "ericnyirimana31@gmail.com" }]
-maintainers = [{ name = "James Mark", email = "ericnyirimana31@gmail.com" }]
+authors = [{ name = "bzsaph", email = "bazimyas@gmail.com" }]
+maintainers = [{ name = "bzsaph", email = "bazimyas@gmail.com" }]
 keywords = ["framework", "web", "mvc", "wsgi", "shared-hosting", "cpanel"]
 
 classifiers = [
