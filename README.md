@@ -156,6 +156,10 @@ User.where('active', 1).order_by('name').first_or_fail()  # identical
 
 ## Layout
 
+A new project is 78 files. Every folder below holds something you will open —
+there are no placeholder files, and the folders `make:` writes into are created
+when you first use them:
+
 ```
 blog/
 ├── app/
@@ -171,12 +175,9 @@ blog/
 │   ├── Models/
 │   ├── Notifications/
 │   ├── Providers/              App, Auth, Event, Route
-│   ├── Rules/                  custom validation rules
-│   ├── Services/
-│   ├── Support/
 │   └── View/Components/        <x-alert> and friends
 ├── bootstrap/app.py            builds the application
-├── config/                     13 files, one per subsystem
+├── config/                     10 files, one per subsystem
 ├── database/
 │   ├── factories/  migrations/  seeders/
 ├── extensions/                 drop-in packages
@@ -192,6 +193,12 @@ blog/
 ├── passenger_wsgi.py           cPanel entry point
 └── wsgi.py                     gunicorn entry point
 ```
+
+`app/Rules/`, `app/Services/` and `app/Support/` are not scaffolded — they
+appear the moment you run `bazimya make:rule`, and imports work without an
+`__init__.py`. `storage/` and `bootstrap/cache/` are created by `bazimya new`
+and recreated on demand, so they are gitignored outright rather than tracked
+with placeholder files.
 
 Controllers, models, middleware, requests and commands each live in a file
 named after the class, and are importable straight away — nothing to register:

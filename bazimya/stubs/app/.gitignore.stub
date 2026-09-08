@@ -5,14 +5,12 @@ __pycache__/
 venv/
 build/
 *.sqlite
-/storage/framework/views/*
-!/storage/framework/views/.gitkeep
-/storage/framework/cache/*
-!/storage/framework/cache/.gitkeep
-/storage/logs/*
-!/storage/logs/.gitkeep
-/bootstrap/cache/*
-!/bootstrap/cache/.gitkeep
+
+# Written at runtime and recreated on demand, so the directories themselves
+# are not tracked. `bazimya new` creates them; nothing here needs committing.
+/storage/
+/bootstrap/cache/
+
 node_modules/
 .DS_Store
 .idea/

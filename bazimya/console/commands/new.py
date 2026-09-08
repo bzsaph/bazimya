@@ -152,12 +152,21 @@ class NewCommand(Command):
                 mode = os.stat(path).st_mode
                 os.chmod(path, mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
-        # These are gitignored, so they ship as .gitkeep and must exist.
+        # Created here rather than shipped as .gitkeep placeholders: a new
+        # project should not open with a dozen empty files in it. Everything
+        # here is gitignored anyway, and the framework recreates what it needs
+        # on demand — this just means `bazimya doctor` has something to check
+        # on the first run.
         for directory in (
+            "storage/app/public",
             "storage/framework/views",
             "storage/framework/cache",
+            "storage/framework/sessions",
+            "storage/framework/testing",
             "storage/logs",
+            "bootstrap/cache",
             "database",
+            "extensions",
         ):
             os.makedirs(os.path.join(target, directory), exist_ok=True)
 
