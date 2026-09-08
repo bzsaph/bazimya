@@ -3,6 +3,7 @@
 import os
 
 from ..command import Command
+from ...support.lang import translate
 
 
 class MigrateCommand(Command):
@@ -143,7 +144,7 @@ class MigrateStatusCommand(Command):
             return 0
 
         rows = [
-            ["Yes" if entry["ran"] else "No", entry["migration"], self.relative(entry["path"])]
+            [translate("Yes") if entry["ran"] else translate("No"), entry["migration"], self.relative(entry["path"])]
             for entry in status
         ]
 

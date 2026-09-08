@@ -3,11 +3,18 @@
 Colour is used when the stream is a TTY and NO_COLOR is unset, and dropped
 otherwise — piping `bazimya route:list` into grep should not produce escape
 codes.
+
+Everything the framework says passes through here, which makes this the one
+place worth translating. Commands keep writing plain English sentences and
+this layer swaps them for the user's language on the way out; see
+bazimya.support.lang.
 """
 
 import os
 import shutil
 import sys
+
+from ..support.lang import translate
 
 
 class Output:
@@ -38,6 +45,10 @@ class Output:
         return hasattr(self.stream, "isatty") and self.stream.isatty()
 
     def paint(self, message, color):
+        # Translate before painting: once escape codes are wrapped around a
+        # sentence it no longer matches anything in the catalogue.
+        message = translate(message)
+
         if not self.colored or color not in self.COLORS:
             return message
 
@@ -50,7 +61,8 @@ class Output:
         self.stream.flush()
 
     def line(self, message=""):
-        self.write(message + "\n")
+        # Painted text arrives already translated and simply passes through.
+        self.write(translate(message) + "\n")
 
     def info(self, message):
         self.line(self.paint(message, "cyan"))
@@ -76,6 +88,10 @@ class Output:
     def table(self, headers, rows, indent="  "):
         if not rows:
             return
+
+        # Translate first: Kinyarwanda headings are longer than English ones
+        # and the column widths have to be measured against what is printed.
+        headers = [translate(str(header)) for header in headers]
 
         columns = len(headers)
         widths = [len(str(h)) for h in headers]
@@ -119,7 +135,7 @@ class Output:
 
     def confirm(self, question, default=False):
         suffix = "[Y/n]" if default else "[y/N]"
-        self.write("{} {} ".format(question, suffix))
+        self.write("{} {} ".format(translate(question), suffix))
 
         try:
             answer = input().strip().lower()
@@ -133,7 +149,7 @@ class Output:
 
     def ask(self, question, default=None):
         hint = " [{}]".format(default) if default is not None else ""
-        self.write("{}{} ".format(question, hint))
+        self.write("{}{} ".format(translate(question), hint))
 
         try:
             answer = input().strip()

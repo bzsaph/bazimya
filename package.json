@@ -1,6 +1,6 @@
 {
   "name": "bazimya",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A Python web framework with no dependencies. Deploys to a VPS or to shared hosting with no shell.",
   "homepage": "https://github.com/bzsaph/bazimya#readme",
   "repository": {

@@ -78,6 +78,72 @@ npm run serve          # the script in package.json
 python bazimya serve   # no Node at all
 ```
 
+## Ikinyarwanda
+
+Bazimya speaks English by default and Kinyarwanda when asked. Every
+instruction, every label and every error message the framework produces goes
+through one catalogue, so switching the language switches all of it:
+
+```
+bazimya lang rw     # Ikinyarwanda
+bazimya lang        # show the current language
+bazimya lang en     # back to English
+```
+
+```
+$ bazimya lang rw
+$ bazimya new urubuga
+
+  Kurema porogaramu ya Bazimya muri urubuga
+
+  Hakozwe dosiye 99.
+
+  Ibikurikira:
+
+      cd urubuga
+      bazimya migrate
+      bazimya serve
+```
+
+`bazimya lang` writes `APP_LOCALE` into the project's `.env`. Three other ways
+to choose, in the order they are consulted:
+
+| | |
+|---|---|
+| `BAZIMYA_LANG=rw bazimya serve` | one command only |
+| `APP_LOCALE=rw` in `.env` | one project |
+| `LANG=rw_RW.UTF-8` | the whole machine, already set on many Rwandan systems |
+
+Validation messages follow the same setting, so the errors a **visitor** to
+the site reads are in Kinyarwanda too:
+
+```python
+Validator({'email': 'nope'}, {'email': 'required|email'})
+# rw: "email igomba kuba imeyili nyayo."
+# en: "The email field must be a valid email address."
+```
+
+Names you have to type or find on disk stay in English on purpose —
+`app/Models`, `migrate`, `.env`. Translating those would leave a beginner
+reading an instruction they cannot follow.
+
+### Adding a language
+
+A catalogue is a dict keyed by the English sentence, so a missing entry falls
+back to readable English rather than breaking. Add `bazimya/lang/sw.py` with a
+`MESSAGES` dict, list `"sw"` in `bazimya.support.lang.SUPPORTED`, and translate
+as much or as little as you like:
+
+```python
+MESSAGES = {
+    "Next:": "Ifuatayo:",
+    "Scaffolded {} files.": "Faili {} zimeundwa.",
+}
+```
+
+Sentences the framework already filled in are matched back to their template,
+so `{}` works whether the value is supplied before or after translation.
+
 ## Method names work either way
 
 Bazimya's own methods are snake_case, but the camelCase spelling of each one
@@ -439,6 +505,7 @@ bazimya serve [--host] [--port]       Development server, with auto-reload
 bazimya build [--shared] [--zip]      Build for deployment
 bazimya doctor                        Check the environment
 bazimya tinker                        REPL with the app booted
+bazimya lang [en|rw]                  Show or change the language
 
 bazimya make:controller <Name>        [--resource] [--api] [--model=Post]
 bazimya make:model <Name>             [-m] [-c]

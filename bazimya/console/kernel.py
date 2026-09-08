@@ -4,6 +4,7 @@ import os
 import sys
 import traceback
 
+from ..support.lang import translate
 from .output import Output
 
 
@@ -46,12 +47,14 @@ class Kernel:
             MigrateRollbackCommand,
             MigrateStatusCommand,
         )
+        from .commands.lang import LangCommand
         from .commands.new import NewCommand
         from .commands.serve import ServeCommand
 
         return [
             NewCommand,
             ServeCommand,
+            LangCommand,
             BuildCommand,
             DoctorCommand,
             TinkerCommand,
@@ -371,7 +374,9 @@ class Kernel:
             width = max(len(name) for name, _ in entries)
 
             for name, description in entries:
-                out.line("      " + name.ljust(width + 4) + description)
+                # The description is padded into a column here, so it has to be
+                # translated on its own — the finished line never matches.
+                out.line("      " + name.ljust(width + 4) + translate(description))
 
         out.line("")
 

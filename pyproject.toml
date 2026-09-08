@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bazimya"
-version = "0.2.1"
+version = "0.3.0"
 description = "A Python web framework with no dependencies, deployable to shared hosting."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
 authors = [{ name = "bzsaph", email = "bazimyas@gmail.com" }]
 maintainers = [{ name = "bzsaph", email = "bazimyas@gmail.com" }]
-keywords = ["framework", "web", "mvc", "wsgi", "shared-hosting", "cpanel"]
+keywords = ["framework", "web", "mvc", "wsgi", "shared-hosting", "cpanel", "kinyarwanda", "i18n", "rwanda"]
 
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -19,6 +19,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Natural Language :: English",
 ]
 
 # The framework runs on the standard library alone. Database drivers beyond
@@ -45,3 +46,9 @@ include = ["bazimya*"]
 
 [tool.setuptools.package-data]
 bazimya = ["stubs/**/*", "stubs/**/.*"]
+
+# The stub globs above are deliberately wide, so anything the operating system
+# drops into a stub directory would otherwise be shipped and then scaffolded
+# into every new project.
+[tool.setuptools.exclude-package-data]
+bazimya = ["**/.DS_Store", "**/Thumbs.db", "**/desktop.ini", "**/*.pyc"]

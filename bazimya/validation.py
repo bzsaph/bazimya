@@ -16,6 +16,7 @@ A failure raises ValidationException, which the exception handler turns into a
 import re
 
 from .http.exceptions import ValidationException
+from .support.lang import translate
 
 _EMAIL = re.compile(r"^[^@\s]+@[^@\s.]+\.[^@\s]+$")
 _URL = re.compile(r"^https?://[^\s/$.?#].[^\s]*$", re.IGNORECASE)
@@ -172,8 +173,14 @@ class Validator:
             rule, "The {field} field is invalid."
         )
 
-        message = template.format(
-            field=field.replace("_", " "), parameter=parameter, value=self.data.get(field)
+        # Translated before formatting, so a catalogue can put {field} where
+        # its own grammar needs it. A message the app supplied itself is not in
+        # any catalogue and passes through untouched.
+        message = translate(
+            template,
+            field=field.replace("_", " "),
+            parameter=parameter,
+            value=self.data.get(field),
         )
 
         self.errors.setdefault(field, []).append(message)

@@ -7,6 +7,7 @@ differ between the two.
 import os
 import sys
 
+from ...support.lang import translate
 from ..command import Command
 
 
@@ -163,10 +164,10 @@ class DoctorCommand(Command):
         try:
             connection = self.app.make("db")
             connection.select("SELECT 1")
-            self.success("    " + self._pad("connection") + "reachable")
+            self.success("    " + self._pad("connection") + translate("reachable"))
         except Exception as error:  # noqa: BLE001 — report, do not raise
             self.problems += 1
-            self.error("    " + self._pad("connection") + "unreachable")
+            self.error("    " + self._pad("connection") + translate("unreachable"))
             self.line("    " + " " * self.LABEL_WIDTH + str(error).split("\n")[0])
 
             return
@@ -286,15 +287,19 @@ class DoctorCommand(Command):
 
     @classmethod
     def _pad(cls, label):
+        # Translate before padding: the column is measured on what is printed,
+        # and a Kinyarwanda label is rarely the same width as its English one.
+        label = translate(label)
+
         # A label wider than the column still needs a separating space, or it
         # runs straight into its value.
         return label.ljust(cls.LABEL_WIDTH) if len(label) < cls.LABEL_WIDTH else label + "  "
 
     def _note(self, label, value):
-        self.line("    " + self._pad(label) + str(value))
+        self.line("    " + self._pad(label) + translate(str(value)))
 
     def _assert(self, label, value, passed, advice, fatal=True):
-        line = "    " + self._pad(label) + str(value)
+        line = "    " + self._pad(label) + translate(str(value))
 
         if passed:
             self.line(line)
@@ -308,4 +313,4 @@ class DoctorCommand(Command):
             self.cautions += 1
             self.warn(line)
 
-        self.line("    " + " " * self.LABEL_WIDTH + advice)
+        self.line("    " + " " * self.LABEL_WIDTH + translate(advice))

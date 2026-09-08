@@ -11,6 +11,11 @@ from ..command import Command
 #: not try to import or byte-compile a template that contains placeholders.
 STUB_SUFFIX = ".stub"
 
+#: Never copied into a new project, and never worth shipping.
+IGNORED_FILES = {".DS_Store", "Thumbs.db", "desktop.ini", ".directory"}
+
+IGNORED_DIRECTORIES = {"__pycache__", ".DS_Store"}
+
 
 class NewCommand(Command):
     name = "new"
@@ -74,7 +79,7 @@ class NewCommand(Command):
         count = 0
 
         for root, directories, files in os.walk(source):
-            directories[:] = [d for d in directories if d != "__pycache__"]
+            directories[:] = [d for d in directories if d not in IGNORED_DIRECTORIES]
 
             relative = os.path.relpath(root, source)
             target_directory = (
@@ -84,7 +89,9 @@ class NewCommand(Command):
             os.makedirs(target_directory, exist_ok=True)
 
             for name in files:
-                if name.endswith(".pyc"):
+                # Editor and OS droppings must never become part of someone's
+                # new project, even if one is sitting in the packaged stubs.
+                if name.endswith(".pyc") or name in IGNORED_FILES:
                     continue
 
                 target_name = name[: -len(STUB_SUFFIX)] if name.endswith(STUB_SUFFIX) else name

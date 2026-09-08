@@ -1,0 +1,7 @@
+# The sdist is built from the working tree, so exclude what should never
+# travel with it regardless of what is sitting on the maintainer's disk.
+global-exclude .DS_Store Thumbs.db desktop.ini *.pyc
+prune .venv
+prune dist
+prune build
+prune node_modules
